@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { getToken } from '../utils/auth'; 
 
-const TU_BACKEND_URL = 'http://192.168.1.100:8080'; // Esto hay que reemplazarlo
+const TU_BACKEND_URL = 'http://192.168.0.106:8080'; // Esto hay que reemplazarlo
 
 
 interface LoginResponseDTO {
