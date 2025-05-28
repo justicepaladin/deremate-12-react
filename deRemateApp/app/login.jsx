@@ -1,4 +1,3 @@
-// app/login.tsx
 import React, { useState } from 'react';
 import {
   View,
@@ -20,7 +19,7 @@ import { useRouter } from 'expo-router';
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const router = useRouter();
@@ -33,16 +32,13 @@ const LoginScreen = () => {
     setError(null);
     setLoading(true);
     try {
-      // api.ts tiene que devolver algo como { jwtToken: '...' }
       const data = await loginUser(email.trim(), password.trim());
       if (data && data.jwtToken) {
         await signIn(data.jwtToken);
-        // signIn (en AuthContext) se encarga de la redirección a la ruta protegida (ej. '/(app)/home')
       } else {
         setError('Respuesta inesperada del servidor o token no encontrado.');
       }
-    } catch (err: any) {
-      // err.message viene de lo que lanzamos en api.ts si hay error.response.data.message o similar
+    } catch (err) {
       setError(err.message || 'Las credenciales no son válidas o ha ocurrido un error.');
       console.error('Login error:', err);
     } finally {
@@ -57,7 +53,7 @@ const LoginScreen = () => {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Image
-          source={require('../assets/images/icon.png')} // Hay que verificar esta ruta.
+          source={require('../assets/images/icon.png')}
           style={styles.logo}
         />
         <Text style={styles.title}>Iniciar Sesión</Text>
@@ -90,11 +86,11 @@ const LoginScreen = () => {
           )}
         </View>
 
-        <TouchableOpacity onPress={() => router.push('register' as any)}>
+        <TouchableOpacity onPress={() => router.push('register')}>
           <Text style={styles.linkText}>¿No tienes cuenta? Regístrate aquí</Text> 
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push('password-recovery' as any)}> 
+        <TouchableOpacity onPress={() => router.push('password-recovery')}> 
           <Text style={styles.linkText}>¿Olvidaste tu contraseña?</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -105,7 +101,7 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5', // Un color de fondo general
+    backgroundColor: '#F5F5F5',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -121,9 +117,9 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   title: {
-    fontSize: 28, // Un poco más grande
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 24, // Más espacio
+    marginBottom: 24,
     color: '#333',
   },
   input: {
@@ -149,18 +145,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 15,
   },
-  button: { // Estilo para el color del texto del botón (solo Android)
-    color: Platform.OS === 'android' ? '#FFFFFF' : '#007AFF', 
+  button: {
+    color: Platform.OS === 'android' ? '#FFFFFF' : '#007AFF',
   },
   buttonActivityIndicator: {
     color: '#007AFF',
   },
   linkText: {
-    color: '#007AFF', 
+    color: '#007AFF',
     marginTop: 16,
     textAlign: 'center',
     fontSize: 15,
   },
 });
 
-export default LoginScreen;
+export default LoginScreen; 

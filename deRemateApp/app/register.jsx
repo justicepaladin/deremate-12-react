@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { registerUser } from '../services/api'; // Ajusta la ruta si es necesario
+import { registerUser } from '../services/api';
 import { useRouter } from 'expo-router';
 
 const RegisterScreen = () => {
@@ -22,12 +22,11 @@ const RegisterScreen = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [documento, setDocumento] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const validateEmail = (emailToValidate: string): boolean => {
-    // Expresión regular simple para validación de email
+  const validateEmail = (emailToValidate) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(emailToValidate);
   };
@@ -35,7 +34,6 @@ const RegisterScreen = () => {
   const handleRegister = async () => {
     setError(null);
 
-    // Validaciones
     if (!nombre.trim() || !apellido.trim() || !email.trim() || !username.trim() || !password.trim() || !documento.trim()) {
       setError('Todos los campos son obligatorios.');
       return;
@@ -65,22 +63,18 @@ const RegisterScreen = () => {
         apellido: apellido.trim(),
         email: email.trim(),
         username: username.trim(),
-        password: password.trim(), // La contraseña se envía en texto plano, el backend debería hashearla
+        password: password.trim(),
         documento: documentoInt,
       };
-      // Asume que registerUser en api.ts maneja la llamada y puede o no devolver datos.
-      // El servicio original de Java devolvía el UsuarioDTO.
       await registerUser(userData);
 
       Alert.alert(
         "Registro Exitoso",
         "Tu cuenta ha sido creada. Revisa tu email para los siguientes pasos (si aplica).",
-        [{ text: "OK", onPress: () => router.push({ pathname: 'confirm-register' as any, params: { email: email.trim() } }) }]
+        [{ text: "OK", onPress: () => router.push({ pathname: 'confirm-register', params: { email: email.trim() } }) }]
       );
-      // Limpiar campos (opcional, ya que navegamos fuera)
-      // setNombre(''); setApellido(''); setEmail(''); /* ...etc */
 
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || 'Error en el registro. Inténtalo de nuevo.');
       console.error('Register error:', err);
     } finally {
@@ -113,7 +107,7 @@ const RegisterScreen = () => {
           )}
         </View>
 
-        <TouchableOpacity onPress={() => router.replace('login' as any)}>
+        <TouchableOpacity onPress={() => router.replace('login')}>
           <Text style={styles.linkText}>¿Ya tienes cuenta? Inicia sesión aquí</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -163,7 +157,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 15,
   },
-  button: { // Estilo para el color del texto del botón (solo Android)
+  button: {
     color: Platform.OS === 'android' ? '#FFFFFF' : '#007AFF',
   },
   buttonActivityIndicator: {
@@ -177,4 +171,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegisterScreen;
+export default RegisterScreen; 

@@ -15,11 +15,11 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { confirmarRegistro } from '../services/api'; 
 
 const ConfirmRegisterScreen = () => {
-  const params = useLocalSearchParams<{ email?: string }>();
-  const [email, setEmail] = useState<string>('');
+  const params = useLocalSearchParams();
+  const [email, setEmail] = useState('');
   const [codigo, setCodigo] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -47,11 +47,9 @@ const ConfirmRegisterScreen = () => {
       Alert.alert(
         'Registro Confirmado',
         'Tu cuenta ha sido confirmada exitosamente. Ahora puedes iniciar sesión.',
-        [{ text: 'Ir a Login', onPress: () => router.replace('login' as any) }]
+        [{ text: 'Ir a Login', onPress: () => router.replace('login') }]
       );
-      // Opcional: limpiar el código después de un envío exitoso
-      // setCodigo('');
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || 'El código de confirmación es incorrecto o ha ocurrido un error.');
       console.error('Confirmation error:', err);
     } finally {
@@ -60,25 +58,8 @@ const ConfirmRegisterScreen = () => {
   };
 
   const handleGoToLogin = () => {
-    router.replace('login' as any);
+    router.replace('login');
   };
-
-  // Opcional: Función para reenviar código (requeriría un endpoint API adicional)
-  // const handleResendCode = async () => {
-  //   if (!email) {
-  //     Alert.alert("Error", "No hay email para reenviar el código.");
-  //     return;
-  //   }
-  //   setLoading(true);
-  //   try {
-  //     // await api.resendConfirmationCode(email); // Suponiendo que existe esta función en api.ts
-  //     Alert.alert("Código Reenviado", "Se ha reenviado un nuevo código de confirmación a tu email.");
-  //   } catch (err: any) {
-  //     Alert.alert("Error", err.message || "No se pudo reenviar el código.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   return (
     <KeyboardAvoidingView
@@ -105,8 +86,8 @@ const ConfirmRegisterScreen = () => {
           placeholder="Código de Confirmación"
           value={codigo}
           onChangeText={setCodigo}
-          keyboardType="number-pad" // O "default" si el código puede tener letras
-          maxLength={6} // Ajusta según la longitud de tu código
+          keyboardType="number-pad"
+          maxLength={6}
         />
 
         {error && <Text style={styles.errorText}>{error}</Text>}
@@ -124,20 +105,11 @@ const ConfirmRegisterScreen = () => {
           )}
         </View>
 
-        {/* <View style={styles.buttonContainer}>
-          <Button
-            title="Reenviar Código"
-            onPress={handleResendCode} // Descomentar si implementas esta función
-            disabled={loading || !email}
-            color={styles.secondaryButton.color}
-          />
-        </View> */}
-
         <View style={styles.buttonContainer}>
           <Button
             title="Volver a Inicio de Sesión"
             onPress={handleGoToLogin}
-            color={styles.secondaryButton.color} // Usar un color diferente para acciones secundarias
+            color={styles.secondaryButton.color}
           />
         </View>
       </ScrollView>
@@ -196,18 +168,17 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: '100%',
-    marginTop: 10, // Espacio entre botones
-    // marginBottom: 10,
+    marginTop: 10,
   },
   button: {
     color: Platform.OS === 'android' ? '#FFFFFF' : '#007AFF',
   },
-  secondaryButton: { // Para botones como "Volver" o "Reenviar"
-    color: Platform.OS === 'android' ? '#FFFFFF' : '#8A8A8E', // Un color más tenue
+  secondaryButton: {
+    color: Platform.OS === 'android' ? '#FFFFFF' : '#8A8A8E',
   },
   buttonActivityIndicator: {
     color: '#007AFF',
   },
 });
 
-export default ConfirmRegisterScreen;
+export default ConfirmRegisterScreen; 
