@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken } from '../utils/auth'; 
 
-const TU_BACKEND_URL = 'http://192.168.0.106:8080';
+const TU_BACKEND_URL = 'http://192.168.100.34:8080';
 
 const apiClient = axios.create({
   baseURL: `${TU_BACKEND_URL}/auth`,
