@@ -34,8 +34,15 @@ const LoginScreen = () => {
     try {
       const data = await loginUser(email.trim(), password.trim());
       if (data && data.jwtToken) {
-        await signIn(data.jwtToken);
-      } else {
+      await signIn(data.jwtToken);
+
+      Alert.alert(
+        'Login exitoso',
+        'Bienvenido/a a la aplicación.',
+        [{ text: 'OK', onPress: () => router.replace('/entregas') }]
+      );
+    }
+ else {
         setError('Respuesta inesperada del servidor o token no encontrado.');
       }
     } catch (err) {

@@ -68,11 +68,14 @@ const RegisterScreen = () => {
       };
       await registerUser(userData);
 
-      Alert.alert(
-        "Registro Exitoso",
-        "Tu cuenta ha sido creada. Revisa tu email para los siguientes pasos (si aplica).",
-        [{ text: "OK", onPress: () => router.push({ pathname: 'confirm-register', params: { email: email.trim() } }) }]
-      );
+await registerUser(userData);
+
+    Alert.alert(
+      "Registro Exitoso",
+      "Tu cuenta ha sido creada exitosamente.",
+      [{ text: "OK", onPress: () => router.replace('/entregas') }]
+    );
+
 
     } catch (err) {
       setError(err.message || 'Error en el registro. Inténtalo de nuevo.');
