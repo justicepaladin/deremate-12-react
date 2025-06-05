@@ -1,7 +1,6 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { getToken, saveToken, removeToken } from '../utils/auth'; 
-import { useRouter, useSegments, Slot } from 'expo-router';
-import { ActivityIndicator, View, StyleSheet } from 'react-native'; 
+import { useRouter, useSegments } from 'expo-router';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { getToken, removeToken, saveToken } from '../utils/auth';
 
 const AuthContext = createContext(undefined);
 
