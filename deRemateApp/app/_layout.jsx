@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
-import { Stack, SplashScreen } from 'expo-router';
+import { SplashScreen, Stack } from 'expo-router';
+import { useEffect } from 'react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,12 +18,14 @@ function RootLayoutNav() {
   }
 
   return (
-    <Stack>
+    <Stack screenOptions={{
+      headerShown: false,
+    }}>
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="register" options={{ title: 'Registro' }} />
       <Stack.Screen name="confirm-register" options={{ title: 'Confirmar Registro' }} />
       <Stack.Screen name="password-recovery" options={{ title: 'Recuperar Contraseña' }} />
-      <Stack.Screen name="(app)" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="index" options={{ headerShown: false }} />
     </Stack>
   );
