@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { getToken } from '../utils/auth'; 
+import { getToken } from '../utils/auth';
 
-const TU_BACKEND_URL = 'http://192.168.0.106:8080';
+const TU_BACKEND_URL = 'http://192.168.1.61:8080';
 
-const apiClient = axios.create({
-  baseURL: `${TU_BACKEND_URL}/auth`,
+export const apiClient = axios.create({
+  baseURL: `${TU_BACKEND_URL}`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -39,7 +39,7 @@ const getErrorMessage = (error) => {
 
 export const loginUser = async (email, password) => {
   try {
-    const response = await apiClient.post('/login', { email, password });
+    const response = await apiClient.post('/auth/login', { email, password });
     return response.data;
   } catch (error) {
     console.error('Login API error:', error);
@@ -49,7 +49,7 @@ export const loginUser = async (email, password) => {
 
 export const registerUser = async (userData) => {
   try {
-    const response = await apiClient.post('/registro', userData);
+    const response = await apiClient.post('/auth/registro', userData);
     return response.data;
   } catch (error) {
     console.error('Register API error:', error);
@@ -59,7 +59,7 @@ export const registerUser = async (userData) => {
 
 export const confirmarRegistro = async (confirmData) => {
   try {
-    await apiClient.post('/confirmar-registro', confirmData);
+    await apiClient.post('/auth/confirmar-registro', confirmData);
   } catch (error) {
     console.error('Confirmar Registro API error:', error);
     throw new Error(getErrorMessage(error));
@@ -68,7 +68,7 @@ export const confirmarRegistro = async (confirmData) => {
 
 export const solicitarRecuperacionPassword = async (recoveryData) => {
   try {
-    const response = await apiClient.post('/olvido-password', recoveryData);
+    const response = await apiClient.post('/auth/olvido-password', recoveryData);
     return response.data;
   } catch (error) {
     console.error('Solicitar Recuperación API error:', error);
@@ -78,7 +78,7 @@ export const solicitarRecuperacionPassword = async (recoveryData) => {
 
 export const confirmarNuevaPassword = async (recoveryConfirmData) => {
   try {
-    await apiClient.post('/confirmar-passwd-recovery', recoveryConfirmData);
+    await apiClient.post('/auth/confirmar-passwd-recovery', recoveryConfirmData);
   } catch (error) {
     console.error('Confirmar Nueva Password API error:', error);
     throw new Error(getErrorMessage(error));
