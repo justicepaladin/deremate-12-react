@@ -13,7 +13,7 @@ const EntregaDetails = () => {
         <Text style={styles.titleText}>Detalles de Entrega</Text>
       </View>
 
-      {/* Cada item en su propio cuadro */}
+      
       <View style={styles.dataCard}>
         <Text style={styles.label}>Dirección📍</Text>
         <Text style={styles.value}>{entrega.direccion}</Text>
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   titleCard: {
-    backgroundColor: '#007AFF', // Azul fuerte
+    backgroundColor: '#007AFF', 
     padding: 20,
     borderRadius: 12,
     marginBottom: 24,
@@ -58,10 +58,10 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFFFFF', // Texto blanco
+    color: '#FFFFFF', 
   },
   dataCard: {
-    backgroundColor: '#E6F0FF', // Azul clarito
+    backgroundColor: '#E6F0FF', 
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0056B3', // Azul más oscuro para el label
+    color: '#0056B3', 
     marginBottom: 6,
   },
   value: {

@@ -41,7 +41,6 @@ export default function PendientesScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Título en su cuadro azul */}
       <View style={styles.titleCard}>
         <Text style={styles.titleText}>Entregas Pendientes</Text>
       </View>
@@ -59,7 +58,7 @@ export default function PendientesScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FAFAFA', padding: 16 },
   titleCard: {
-    backgroundColor: '#007AFF', // Azul oscuro
+    backgroundColor: '#007AFF', 
     padding: 20,
     borderRadius: 12,
     marginBottom: 24,
@@ -73,13 +72,13 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFFFFF', // Texto blanco
+    color: '#FFFFFF', 
   },
   list: {
     paddingBottom: 16,
   },
   card: {
-    backgroundColor: '#E6F0FF', // Azul clarito
+    backgroundColor: '#E6F0FF', 
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
@@ -92,7 +91,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#0056B3', // Azul más oscuro para el label
+    color: '#0056B3', 
     marginBottom: 6,
   },
   value: {
