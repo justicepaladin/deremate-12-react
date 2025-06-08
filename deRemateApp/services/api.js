@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { getToken } from '../utils/auth';
 
-const TU_BACKEND_URL = 'http://192.168.1.61:8080';
+const TU_BACKEND_URL = 'http://192.168.100.34:8080';
+
 
 export const apiClient = axios.create({
   baseURL: `${TU_BACKEND_URL}`,
@@ -14,6 +15,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     const token = await getToken();
+    console.log('TOKEN:', token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
