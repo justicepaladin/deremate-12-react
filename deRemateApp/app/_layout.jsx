@@ -1,11 +1,11 @@
-import { SplashScreen, Stack } from 'expo-router';
-import { useEffect } from 'react';
-import { AuthProvider, useAuth } from '../context/AuthContext';
+import { SplashScreen, Stack } from "expo-router";
+import { useEffect } from "react";
+import { AuthProvider, useAuth } from "../context/AuthContext";
 
 SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
-  const { isLoading, token } = useAuth();
+  const { isLoading } = useAuth();
 
   useEffect(() => {
     if (!isLoading) {
@@ -18,13 +18,25 @@ function RootLayoutNav() {
   }
 
   return (
-    <Stack screenOptions={{
-      headerShown: false,
-    }}>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
       <Stack.Screen name="login" options={{ headerShown: false }} />
-      <Stack.Screen name="register" options={{ title: 'Registro' }} />
-      <Stack.Screen name="confirm-register" options={{ title: 'Confirmar Registro' }} />
-      <Stack.Screen name="password-recovery" options={{ title: 'Recuperar Contraseña' }} />
+      <Stack.Screen name="register" options={{ title: "Registro" }} />
+      <Stack.Screen
+        name="confirm-register"
+        options={{ title: "Confirmar Registro" }}
+      />
+      <Stack.Screen
+        name="password-recovery"
+        options={{ title: "Recuperar Contraseña" }}
+      />
+      <Stack.Screen
+        name="confirm-reset"
+        options={{ title: "Recuperar Contraseña" }}
+      />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="index" options={{ headerShown: false }} />
     </Stack>
@@ -37,4 +49,4 @@ export default function RootLayout() {
       <RootLayoutNav />
     </AuthProvider>
   );
-} 
+}

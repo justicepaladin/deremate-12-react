@@ -1,39 +1,45 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Platform, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import MapView, { Marker } from 'react-native-maps';
-import HeaderLogo from '../components/HeaderLogo'; 
-import Geocoder from 'react-native-geocoding';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Platform,
+  ActivityIndicator,
+} from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import MapView, { Marker } from "react-native-maps";
+import HeaderLogo from "../components/HeaderLogo";
+import Geocoder from "react-native-geocoding";
 
 const EntregaDetails = () => {
   const { entregaObj } = useLocalSearchParams();
   const entrega = JSON.parse(entregaObj);
 
   const [location, setLocation] = useState(null);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Geocoder.init('AIzaSyCXJYvLmFLMFBbQNThnxtWrMg2QO9lLpNk');
+    Geocoder.init("AIzaSyCXJYvLmFLMFBbQNThnxtWrMg2QO9lLpNk");
 
     Geocoder.from(entrega.direccion)
-      .then(json => {
+      .then((json) => {
         const loc = json.results[0].geometry.location;
         setLocation({
           latitude: loc.lat,
           longitude: loc.lng,
         });
       })
-      .catch(error => {
-        console.warn('Error geocoding:', error);
+      .catch((error) => {
+        console.warn("Error geocoding:", error);
       })
       .finally(() => {
-        setLoading(false); 
+        setLoading(false);
       });
   }, []);
 
   return (
     <View style={styles.container}>
-      <HeaderLogo /> 
+      <HeaderLogo />
       <View style={styles.titleCard}>
         <Text style={styles.titleText}>Detalles de Entrega</Text>
       </View>
@@ -93,70 +99,70 @@ const EntregaDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: "#FAFAFA",
     padding: 20,
   },
   titleCard: {
-    backgroundColor: '#007AFF', 
+    backgroundColor: "#007AFF",
     padding: 20,
     borderRadius: 12,
     marginBottom: 24,
-    alignItems: 'center',
+    alignItems: "center",
     elevation: 4,
-    shadowColor: '#000', 
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
   },
   titleText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF', 
+    fontWeight: "bold",
+    color: "#FFFFFF",
   },
   dataCard: {
-    backgroundColor: '#E6F0FF', 
+    backgroundColor: "#E6F0FF",
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },
   label: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#0056B3', 
+    fontWeight: "bold",
+    color: "#0056B3",
     marginBottom: 6,
   },
   value: {
     fontSize: 18,
-    color: '#333333',
+    color: "#333333",
   },
   mapContainer: {
     flex: 1,
     marginTop: 20,
     borderRadius: 12,
-    overflow: 'hidden',
-    height: 300, 
+    overflow: "hidden",
+    height: 300,
   },
   map: {
     flex: 1,
   },
   loadingContainer: {
     marginTop: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    color: '#555',
+    color: "#555",
   },
   errorText: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 20,
-    color: 'red',
+    color: "red",
     fontSize: 16,
   },
 });

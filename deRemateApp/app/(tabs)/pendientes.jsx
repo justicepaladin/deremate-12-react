@@ -1,9 +1,14 @@
-import { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { useEntregaService } from '../../services/entregas';
-import { useRouter } from 'expo-router';
-import HeaderLogo from '../../components/HeaderLogo'; 
- 
+import { useEffect, useState } from "react";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
+import { useEntregaService } from "../../services/entregas";
+import { useRouter } from "expo-router";
+import HeaderLogo from "../../components/HeaderLogo";
 
 export default function PendientesScreen() {
   const [entregas, setEntregas] = useState([]);
@@ -28,7 +33,7 @@ export default function PendientesScreen() {
       style={styles.card}
       onPress={() => {
         router.push({
-          pathname: '/entrega-details',
+          pathname: "/entrega-details",
           params: { entregaObj: JSON.stringify(item) },
         });
       }}
@@ -41,66 +46,66 @@ export default function PendientesScreen() {
     </TouchableOpacity>
   );
 
- return (
-  <View style={styles.container}>
-    <HeaderLogo /> 
+  return (
+    <View style={styles.container}>
+      <HeaderLogo />
 
-    <View style={styles.titleCard}>
-      <Text style={styles.titleText}>Entregas Pendientes</Text>
+      <View style={styles.titleCard}>
+        <Text style={styles.titleText}>Entregas Pendientes</Text>
+      </View>
+
+      <FlatList
+        data={entregas}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderEntrega}
+        contentContainerStyle={styles.list}
+      />
     </View>
-
-    <FlatList
-      data={entregas}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={renderEntrega}
-      contentContainerStyle={styles.list}
-    />
-  </View>
-);
+  );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAFA', padding: 16 },
+  container: { flex: 1, backgroundColor: "#FAFAFA", padding: 16 },
   titleCard: {
-    backgroundColor: '#007AFF', 
+    backgroundColor: "#007AFF",
     padding: 20,
     borderRadius: 12,
     marginBottom: 24,
-    alignItems: 'center',
+    alignItems: "center",
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
   },
   titleText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF', 
+    fontWeight: "bold",
+    color: "#FFFFFF",
   },
   list: {
     paddingBottom: 16,
   },
   card: {
-    backgroundColor: '#E6F0FF', 
+    backgroundColor: "#E6F0FF",
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },
   label: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#0056B3', 
+    fontWeight: "bold",
+    color: "#0056B3",
     marginBottom: 6,
   },
   value: {
     fontSize: 16,
-    color: '#333333',
+    color: "#333333",
     marginBottom: 4,
   },
 });
