@@ -37,9 +37,22 @@ export const useEntregaService = () => {
     }
   };
 
+  const updateStatus = async (id, status) => {
+    try {
+      const response = await apiClient.put(`/api/entregas/${id}/estado?nuevoEstado=${encodeURIComponent(status)}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error al actualizar el estado de la entrega:", error);
+      throw new Error(
+        "No se pudo actualizar el estado de la entrega. Inténtalo de nuevo más tarde.",
+      );
+    }
+  }
+
   return {
     getEntregas,
     getPendientes,
     getEntregaById,
+    updateStatus,
   };
 };

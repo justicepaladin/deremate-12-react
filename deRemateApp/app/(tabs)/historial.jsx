@@ -1,5 +1,6 @@
 import { ListEntregaItem } from "@/components/ListEntregaItem";
-import { useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import {
     FlatList,
     StyleSheet,
@@ -13,22 +14,24 @@ export default function PendientesScreen() {
   const [entregas, setEntregas] = useState([]);
   const entregasService = useEntregaService();
   const total = entregas.length;
-  const pendientes = entregas.filter(e => e.estado === "PENDIENTE").length;
-  const completadas = entregas.filter(e => e.estado === "ENTREGADA" || e.estado === "COMPLETADA").length;
+  const pendientes = entregas.filter(e => e.estado === "PENDIENTE" || e.estado === "EN_VIAJE").length;
+  const completadas = entregas.filter(e => e.estado === "ENTREGADO").length;
 
 
-  useEffect(() => {
-    const fetchEntregasEntregas = async () => {
-      try {
+  const fetchEntregasEntregas = async () => {
+        try {
         const data = await entregasService.getEntregas();
         setEntregas(data);
-      } catch (error) {
+        } catch (error) {
         console.error(error);
-      }
+        }
     };
 
-    fetchEntregasEntregas();
-  }, []);
+  useFocusEffect(
+      useCallback(() => {
+        fetchEntregasEntregas();
+      }, [])
+    );
 
 
   return (

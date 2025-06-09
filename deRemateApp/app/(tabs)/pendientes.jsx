@@ -1,5 +1,6 @@
 import { ListEntregaItem } from "@/components/ListEntregaItem";
-import { useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -13,18 +14,22 @@ export default function PendientesScreen() {
   const [entregas, setEntregas] = useState([]);
   const entregasService = useEntregaService();
 
-  useEffect(() => {
-    const fetchEntregasPendientes = async () => {
-      try {
-        const data = await entregasService.getPendientes();
-        setEntregas(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
 
-    fetchEntregasPendientes();
-  }, []);
+  const fetchEntregasPendientes = async () => {
+    try {
+      const data = await entregasService.getPendientes();
+      setEntregas(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchEntregasPendientes();
+    }, [])
+  );
 
   
 
