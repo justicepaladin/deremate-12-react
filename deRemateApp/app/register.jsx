@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { registerUser } from '../services/api';
 import { useRouter } from 'expo-router';
+import HeaderLogo from '../components/HeaderLogo'; 
 
 const RegisterScreen = () => {
   const [nombre, setNombre] = useState('');
@@ -90,8 +91,9 @@ await registerUser(userData);
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.title}>Registro de Usuario</Text>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+    <HeaderLogo />
+    <Text style={styles.title}>Registro de Usuario</Text>
 
         <TextInput style={styles.input} placeholder="Nombre" value={nombre} onChangeText={setNombre} />
         <TextInput style={styles.input} placeholder="Apellido" value={apellido} onChangeText={setApellido} />

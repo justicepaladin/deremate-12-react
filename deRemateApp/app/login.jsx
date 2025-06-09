@@ -15,6 +15,7 @@ import {
 import { loginUser } from '../services/api'; 
 import { useAuth } from '../context/AuthContext'; 
 import { useRouter } from 'expo-router';
+import HeaderLogo from '../components/HeaderLogo'; 
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -54,55 +55,52 @@ const LoginScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Image
-          source={require('../assets/images/icon.png')}
-          style={styles.logo}
-        />
-        <Text style={styles.title}>Iniciar Sesión</Text>
+  <KeyboardAvoidingView
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    style={styles.container}
+  >
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <HeaderLogo /> 
+      <Text style={styles.title}>Iniciar Sesión</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoComplete="email"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Contraseña"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          autoComplete="password"
-        />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        autoComplete="email"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Contraseña"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        autoComplete="password"
+      />
 
-        {error && <Text style={styles.errorText}>{error}</Text>}
+      {error && <Text style={styles.errorText}>{error}</Text>}
 
-        <View style={styles.buttonContainer}>
-          {loading ? (
-            <ActivityIndicator size="large" color={styles.buttonActivityIndicator.color} />
-          ) : (
-            <Button title="Iniciar sesión" onPress={handleLogin} disabled={loading} color={styles.button.color} />
-          )}
-        </View>
+      <View style={styles.buttonContainer}>
+        {loading ? (
+          <ActivityIndicator size="large" color={styles.buttonActivityIndicator.color} />
+        ) : (
+          <Button title="Iniciar sesión" onPress={handleLogin} disabled={loading} color={styles.button.color} />
+        )}
+      </View>
 
-        <TouchableOpacity onPress={() => router.push('register')}>
-          <Text style={styles.linkText}>¿No tienes cuenta? Regístrate aquí</Text> 
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => router.push('register')}>
+        <Text style={styles.linkText}>¿No tienes cuenta? Regístrate aquí</Text> 
+      </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push('password-recovery')}> 
-          <Text style={styles.linkText}>¿Olvidaste tu contraseña?</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
-  );
+      <TouchableOpacity onPress={() => router.push('password-recovery')}> 
+        <Text style={styles.linkText}>¿Olvidaste tu contraseña?</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  </KeyboardAvoidingView>
+);
 };
 
 const styles = StyleSheet.create({

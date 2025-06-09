@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useEntregaService } from '../../services/entregas';
 import { useRouter } from 'expo-router';
+import HeaderLogo from '../../components/HeaderLogo'; 
+ 
 
 export default function PendientesScreen() {
   const [entregas, setEntregas] = useState([]);
@@ -39,20 +41,22 @@ export default function PendientesScreen() {
     </TouchableOpacity>
   );
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.titleCard}>
-        <Text style={styles.titleText}>Entregas Pendientes</Text>
-      </View>
+ return (
+  <View style={styles.container}>
+    <HeaderLogo /> 
 
-      <FlatList
-        data={entregas}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderEntrega}
-        contentContainerStyle={styles.list}
-      />
+    <View style={styles.titleCard}>
+      <Text style={styles.titleText}>Entregas Pendientes</Text>
     </View>
-  );
+
+    <FlatList
+      data={entregas}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={renderEntrega}
+      contentContainerStyle={styles.list}
+    />
+  </View>
+);
 }
 
 const styles = StyleSheet.create({

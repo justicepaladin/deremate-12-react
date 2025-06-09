@@ -1,19 +1,42 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useLocalSearchParams } from 'expo-router'; // Expo Router
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Platform, ActivityIndicator } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import MapView, { Marker } from 'react-native-maps';
+import HeaderLogo from '../components/HeaderLogo'; 
+import Geocoder from 'react-native-geocoding';
 
 const EntregaDetails = () => {
   const { entregaObj } = useLocalSearchParams();
   const entrega = JSON.parse(entregaObj);
 
+  const [location, setLocation] = useState(null);
+  const [loading, setLoading] = useState(true); 
+
+  useEffect(() => {
+    Geocoder.init('AIzaSyCXJYvLmFLMFBbQNThnxtWrMg2QO9lLpNk');
+
+    Geocoder.from(entrega.direccion)
+      .then(json => {
+        const loc = json.results[0].geometry.location;
+        setLocation({
+          latitude: loc.lat,
+          longitude: loc.lng,
+        });
+      })
+      .catch(error => {
+        console.warn('Error geocoding:', error);
+      })
+      .finally(() => {
+        setLoading(false); 
+      });
+  }, []);
+
   return (
     <View style={styles.container}>
-      {/* Cuadro Título */}
+      <HeaderLogo /> 
       <View style={styles.titleCard}>
         <Text style={styles.titleText}>Detalles de Entrega</Text>
       </View>
-
-      
       <View style={styles.dataCard}>
         <Text style={styles.label}>Dirección📍</Text>
         <Text style={styles.value}>{entrega.direccion}</Text>
@@ -33,6 +56,36 @@ const EntregaDetails = () => {
         <Text style={styles.label}>Observaciones</Text>
         <Text style={styles.value}>{entrega.observaciones}</Text>
       </View>
+
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>Cargando mapa...</Text>
+        </View>
+      ) : location ? (
+        <View style={styles.mapContainer}>
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+          >
+            <Marker
+              coordinate={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+              }}
+              title={entrega.direccion}
+              description="Destino de entrega"
+            />
+          </MapView>
+        </View>
+      ) : (
+        <Text style={styles.errorText}>No se pudo obtener la ubicación.</Text>
+      )}
     </View>
   );
 };
@@ -80,6 +133,31 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 18,
     color: '#333333',
+  },
+  mapContainer: {
+    flex: 1,
+    marginTop: 20,
+    borderRadius: 12,
+    overflow: 'hidden',
+    height: 300, 
+  },
+  map: {
+    flex: 1,
+  },
+  loadingContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#555',
+  },
+  errorText: {
+    textAlign: 'center',
+    marginTop: 20,
+    color: 'red',
+    fontSize: 16,
   },
 });
 
