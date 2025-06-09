@@ -1,7 +1,5 @@
 import { apiClient } from "./api";
 
-
-
 export const useEntregaService = () => {
 
     const getEntregas = async () => {

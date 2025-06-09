@@ -12,10 +12,10 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { confirmarRegistro } from '../services/api'; 
+import { confirmarRegistro } from '../services/user';
 
 const ConfirmRegisterScreen = () => {
-  const params = useLocalSearchParams();
+  const { email: emailParam } = useLocalSearchParams();
   const [email, setEmail] = useState('');
   const [codigo, setCodigo] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,22 +23,19 @@ const ConfirmRegisterScreen = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (params.email) {
-      setEmail(params.email);
+    if (emailParam) {
+      setEmail(emailParam);
     } else {
       setError("No se ha proporcionado un email para la confirmación.");
     }
-  }, [params]);
+  }, [emailParam]);
 
   const handleConfirm = async () => {
-    if (!email) {
-      setError("No hay un email asociado para confirmar.");
+    if (!email || !codigo.trim()) {
+      setError('Todos los campos son obligatorios.');
       return;
     }
-    if (!codigo.trim()) {
-      setError('Por favor, ingresa el código de confirmación.');
-      return;
-    }
+
     setError(null);
     setLoading(true);
 
@@ -50,7 +47,11 @@ const ConfirmRegisterScreen = () => {
         [{ text: 'Ir a Login', onPress: () => router.replace('login') }]
       );
     } catch (err) {
-      setError(err.message || 'El código de confirmación es incorrecto o ha ocurrido un error.');
+      setError(
+        typeof err?.message === 'string' && err.message.trim().length > 0
+          ? err.message
+          : 'El código de confirmación es incorrecto o ha ocurrido un error.'
+      );
       console.error('Confirmation error:', err);
     } finally {
       setLoading(false);
@@ -66,14 +67,13 @@ const ConfirmRegisterScreen = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>Confirmar Registro</Text>
 
         {email ? (
           <Text style={styles.infoText}>
             Se ha enviado un código de confirmación a:
-            <Text style={styles.emailText}> {email}</Text>.
-            Por favor, ingrésalo a continuación.
+            <Text style={styles.emailText}> {email}</Text>. Por favor, ingrésalo a continuación.
           </Text>
         ) : (
           <Text style={styles.infoText}>
@@ -87,6 +87,7 @@ const ConfirmRegisterScreen = () => {
           value={codigo}
           onChangeText={setCodigo}
           keyboardType="number-pad"
+          autoCapitalize="none"
           maxLength={6}
         />
 
@@ -100,7 +101,7 @@ const ConfirmRegisterScreen = () => {
               title="Confirmar Código"
               onPress={handleConfirm}
               disabled={loading || !email}
-              color={styles.button.color}
+              color={Platform.OS === 'android' ? '#FFFFFF' : '#007AFF'}
             />
           )}
         </View>
@@ -109,7 +110,7 @@ const ConfirmRegisterScreen = () => {
           <Button
             title="Volver a Inicio de Sesión"
             onPress={handleGoToLogin}
-            color={styles.secondaryButton.color}
+            color={Platform.OS === 'android' ? '#FFFFFF' : '#8A8A8E'}
           />
         </View>
       </ScrollView>
@@ -170,15 +171,9 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: 10,
   },
-  button: {
-    color: Platform.OS === 'android' ? '#FFFFFF' : '#007AFF',
-  },
-  secondaryButton: {
-    color: Platform.OS === 'android' ? '#FFFFFF' : '#8A8A8E',
-  },
   buttonActivityIndicator: {
     color: '#007AFF',
   },
 });
 
-export default ConfirmRegisterScreen; 
+export default ConfirmRegisterScreen;

@@ -5,14 +5,14 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  "person": 'person',
 };
 
 export function IconSymbol({
   name,
   size = 24,
   color,
-  style,
-  weight,
+  style = null
 }) {
   return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
 } 
