@@ -1,10 +1,10 @@
-import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import React from "react";
+import { Image, StyleSheet, View } from "react-native";
 
 const HeaderLogo = () => (
   <View style={styles.container}>
     <Image
-      source={require('../assets/images/deremate-logo.png')}
+      source={require("../assets/images/deremate-logo.png")}
       style={styles.logo}
     />
   </View>
@@ -12,13 +12,13 @@ const HeaderLogo = () => (
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   logo: {
     width: 120,
     height: 120,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
 });
 

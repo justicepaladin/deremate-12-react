@@ -1,13 +1,12 @@
-import axios from 'axios';
-import { getToken } from '../utils/auth';
+import axios from "axios";
+import { getToken } from "../utils/auth";
 
-const TU_BACKEND_URL = 'http://192.168.0.8:8080';
-
+const TU_BACKEND_URL = "http://192.168.0.8:8080";
 
 export const apiClient = axios.create({
   baseURL: `${TU_BACKEND_URL}`,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   timeout: 10000,
 });
@@ -16,7 +15,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     const token = await getToken();
-    console.log('TOKEN:', token);
+    console.log("TOKEN:", token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -24,21 +23,26 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Log de las peticiones
 apiClient.interceptors.request.use(
   (config) => {
-    console.log(`Making API call to: ${config.url} with method: ${config.method}`);
-    if (config.method !== 'get') {
-      console.log(`Request body for ${config.method.toUpperCase()} ${config.url}:`, config.data);
+    console.log(
+      `Making API call to: ${config.url} with method: ${config.method}`,
+    );
+    if (config.method !== "get") {
+      console.log(
+        `Request body for ${config.method.toUpperCase()} ${config.url}:`,
+        config.data,
+      );
     }
     return config;
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Log de responses
@@ -48,9 +52,12 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error(`Error response from ${error.config?.url}:`, error.response?.data || error.message);
+    console.error(
+      `Error response from ${error.config?.url}:`,
+      error.response?.data || error.message,
+    );
     return Promise.reject(error);
-  }
+  },
 );
 
 export const getErrorMessage = (error) => {
@@ -59,9 +66,9 @@ export const getErrorMessage = (error) => {
     if (data.message) return data.message;
     if (data.error) return data.error;
     if (data.errors && data.errors.length > 0) {
-      return data.errors.map(e => `${e.field}: ${e.message}`).join(', ');
+      return data.errors.map((e) => `${e.field}: ${e.message}`).join(", ");
     }
   }
   if (error.message) return error.message;
-  return 'Ocurrió un error desconocido.';
+  return "Ocurrió un error desconocido.";
 };

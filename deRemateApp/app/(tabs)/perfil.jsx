@@ -1,7 +1,14 @@
-import { View, Text, StyleSheet, Button, ActivityIndicator, Image } from 'react-native';
-import { useAuth } from '@/context/AuthContext';
-import { useUsuario } from '@/hooks/useUsuario';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  ActivityIndicator,
+  Image,
+} from "react-native";
+import { useAuth } from "@/context/AuthContext";
+import { useUsuario } from "@/hooks/useUsuario";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function PerfilScreen() {
   const { signOut } = useAuth();
@@ -22,7 +29,12 @@ export default function PerfilScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Perfil del Usuario</Text>
 
-      <MaterialIcons name="account-circle" size={100} color="#888" style={styles.icon} />
+      <MaterialIcons
+        name="account-circle"
+        size={100}
+        color="#888"
+        style={styles.icon}
+      />
 
       <View style={styles.card}>
         <Text style={styles.label}>Nombre:</Text>
@@ -41,7 +53,7 @@ export default function PerfilScreen() {
         <Text>{usuario.username}</Text>
 
         <Text style={styles.label}>Estado:</Text>
-        <Text style={{ color: usuario.estado === 'ACTIVO' ? 'green' : 'red' }}>
+        <Text style={{ color: usuario.estado === "ACTIVO" ? "green" : "red" }}>
           {usuario.estado}
         </Text>
       </View>
@@ -54,34 +66,34 @@ export default function PerfilScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 24,
-      backgroundColor: '#fff',
-    },
-    title: {
-      fontSize: 22,
-      fontWeight: 'bold',
-      marginBottom: 16,
-      alignSelf: 'center',
-    },
-    card: {
-      backgroundColor: '#f1f5ff',
-      borderRadius: 8,
-      padding: 16,
-      marginBottom: 24,
-      elevation: 2,
-    },
-    label: {
-      fontWeight: '600',
-      marginTop: 8,
-    },
-    icon: {
-        marginBottom: 16,
-        alignSelf: 'center',
-      },
-    buttonContainer: {
-        width: 200,
-        alignSelf: 'center',
-    },
-  });
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: "#fff",
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 16,
+    alignSelf: "center",
+  },
+  card: {
+    backgroundColor: "#f1f5ff",
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 24,
+    elevation: 2,
+  },
+  label: {
+    fontWeight: "600",
+    marginTop: 8,
+  },
+  icon: {
+    marginBottom: 16,
+    alignSelf: "center",
+  },
+  buttonContainer: {
+    width: 200,
+    alignSelf: "center",
+  },
+});
