@@ -1,15 +1,15 @@
+import Constants from "expo-constants";
+import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Platform,
   ActivityIndicator,
+  StyleSheet,
+  Text,
+  View
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import Geocoder from "react-native-geocoding";
 import MapView, { Marker } from "react-native-maps";
 import HeaderLogo from "../components/HeaderLogo";
-import Geocoder from "react-native-geocoding";
 
 const EntregaDetails = () => {
   const { entregaObj } = useLocalSearchParams();
@@ -18,8 +18,9 @@ const EntregaDetails = () => {
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const apiKey = Constants.expoConfig.extra.googleMapsApiKey;
   useEffect(() => {
-    Geocoder.init("AIzaSyCXJYvLmFLMFBbQNThnxtWrMg2QO9lLpNk");
+    Geocoder.init(apiKey);
 
     Geocoder.from(entrega.direccion)
       .then((json) => {

@@ -36,6 +36,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="historial"
+        options={{
+          title: "Historial",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="home.fill" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="pendientes"
         options={{
           title: "Entregas Pendientes",

@@ -1,7 +1,9 @@
 import axios from "axios";
+import Constants from 'expo-constants';
 import { getToken } from "../utils/auth";
 
-const TU_BACKEND_URL = "http://192.168.0.8:8080";
+
+const TU_BACKEND_URL = Constants.expoConfig.extra.apiUrl
 
 export const apiClient = axios.create({
   baseURL: `${TU_BACKEND_URL}`,

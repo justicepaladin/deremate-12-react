@@ -1,10 +1,10 @@
 import { ListEntregaItem } from "@/components/ListEntregaItem";
 import { useEffect, useState } from "react";
 import {
-  FlatList,
-  StyleSheet,
-  Text,
-  View
+    FlatList,
+    StyleSheet,
+    Text,
+    View
 } from "react-native";
 import HeaderLogo from "../../components/HeaderLogo";
 import { useEntregaService } from "../../services/entregas";
@@ -12,21 +12,24 @@ import { useEntregaService } from "../../services/entregas";
 export default function PendientesScreen() {
   const [entregas, setEntregas] = useState([]);
   const entregasService = useEntregaService();
+  const total = entregas.length;
+  const pendientes = entregas.filter(e => e.estado === "PENDIENTE").length;
+  const completadas = entregas.filter(e => e.estado === "ENTREGADA" || e.estado === "COMPLETADA").length;
+
 
   useEffect(() => {
-    const fetchEntregasPendientes = async () => {
+    const fetchEntregasEntregas = async () => {
       try {
-        const data = await entregasService.getPendientes();
+        const data = await entregasService.getEntregas();
         setEntregas(data);
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchEntregasPendientes();
+    fetchEntregasEntregas();
   }, []);
 
-  
 
   return (
     <View style={styles.container}>
@@ -36,20 +39,56 @@ export default function PendientesScreen() {
         <Text style={styles.titleText}>Entregas Pendientes</Text>
       </View>
 
+      <View style={styles.dashboard}>
+        <View style={styles.dashboardItem}>
+          <Text style={styles.dashboardLabel}>Totales</Text>
+          <Text style={styles.dashboardValue}>{total}</Text>
+        </View>
+        <View style={styles.dashboardItem}>
+          <Text style={styles.dashboardLabel}>Pendientes</Text>
+          <Text style={styles.dashboardValue}>{pendientes}</Text>
+        </View>
+        <View style={styles.dashboardItem}>
+          <Text style={styles.dashboardLabel}>Completadas</Text>
+          <Text style={styles.dashboardValue}>{completadas}</Text>
+        </View>
+      </View>
+
       <FlatList
         data={entregas}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <ListEntregaItem item={item} />
+        <ListEntregaItem item={item} />
         )}
         contentContainerStyle={styles.list}
-      />
+    />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FAFAFA", padding: 16 },
+  dashboard: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 20,
+    padding: 12,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    elevation: 2,
+  },
+  dashboardItem: {
+    alignItems: "center",
+  },
+  dashboardLabel: {
+    fontSize: 14,
+    color: "#888",
+  },
+  dashboardValue: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#007AFF",
+  },
   titleCard: {
     backgroundColor: "#007AFF",
     padding: 10,
