@@ -1,8 +1,8 @@
-import { authTokenManager } from "@/utils/authManager";
+import { authTokenManager } from "@/context/authManager";
 import axios from "axios";
 
 
-const TU_BACKEND_URL = Constants.expoConfig.extra.apiUrl
+const TU_BACKEND_URL = "http://192.168.0.8:8080"// Constants.expoConfig.extra.apiUrl
 
 export const apiClient = axios.create({
   baseURL: `${TU_BACKEND_URL}`,

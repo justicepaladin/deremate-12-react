@@ -1,4 +1,4 @@
-import { authTokenManager } from "@/utils/authManager";
+import { authTokenManager } from "@/context/authManager";
 import { useRouter, useSegments } from "expo-router";
 import { createContext, useContext, useEffect, useState } from "react";
 
