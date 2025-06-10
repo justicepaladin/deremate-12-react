@@ -3,10 +3,11 @@ import axios from "axios";
 import Constants from 'expo-constants';
 
 
-const TU_BACKEND_URL = Constants.expoConfig.extra.apiUrl
+const BACKEND = Constants.expoConfig.extra.apiUrl
+
 
 export const apiClient = axios.create({
-  baseURL: `${TU_BACKEND_URL}`,
+  baseURL: `${BACKEND}`,
   headers: {
     "Content-Type": "application/json",
   },
