@@ -1,5 +1,6 @@
 import { authTokenManager } from "@/context/authManager";
 import axios from "axios";
+import Constants from 'expo-constants';
 
 
 const TU_BACKEND_URL = "http://192.168.0.8:8080"// Constants.expoConfig.extra.apiUrl
