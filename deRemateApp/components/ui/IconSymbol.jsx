@@ -6,6 +6,7 @@ const MAPPING = {
   "chevron.left.forwardslash.chevron.right": "code",
   "chevron.right": "chevron-right",
   person: "person",
+  history: "history",
 };
 
 export function IconSymbol({ name, size = 24, color, style = null }) {

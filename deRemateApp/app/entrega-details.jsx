@@ -1,25 +1,34 @@
+import { useEntregaService } from "@/services/entregas";
+import Constants from "expo-constants";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Platform,
   ActivityIndicator,
+  Alert,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import Geocoder from "react-native-geocoding";
 import MapView, { Marker } from "react-native-maps";
 import HeaderLogo from "../components/HeaderLogo";
-import Geocoder from "react-native-geocoding";
 
 const EntregaDetails = () => {
+  const entregaService = useEntregaService();
   const { entregaObj } = useLocalSearchParams();
   const entrega = JSON.parse(entregaObj);
 
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const router = useRouter();
 
+  const apiKey = Constants.expoConfig.extra.googleMapsApiKey;
   useEffect(() => {
-    Geocoder.init("AIzaSyCXJYvLmFLMFBbQNThnxtWrMg2QO9lLpNk");
+    Geocoder.init(apiKey);
 
     Geocoder.from(entrega.direccion)
       .then((json) => {
@@ -37,32 +46,60 @@ const EntregaDetails = () => {
       });
   }, []);
 
+
+  function formatDate(fecha) {
+    if (!fecha) return "";
+    const date = new Date(fecha);
+    if (isNaN(date)) return fecha;
+    return date.toLocaleString("es-AR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  const openInGoogleMaps = () => {
+    if (!location) return;
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}&travelmode=driving`;
+    Linking.openURL(url);
+  };
+
+  const handleUpdateStatus = async () => {
+    setUpdating(true);
+    try {
+      let nuevoEstado = "ENTREGADO";
+      if (entrega.estado === "PENDIENTE") {
+        nuevoEstado = "EN_VIAJE";
+      }
+      await entregaService.updateStatus(entrega.id, nuevoEstado);
+      Alert.alert("Estado actualizado", "La entrega avanzó al siguiente estado.");
+      router.back();
+    } catch (error) {
+      Alert.alert("Error", "No se pudo actualizar el estado.");
+      console.error(error);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: "#F7F9FB" }}>
+    <ScrollView contentContainerStyle={styles.container}>
       <HeaderLogo />
       <View style={styles.titleCard}>
         <Text style={styles.titleText}>Detalles de Entrega</Text>
       </View>
       <View style={styles.dataCard}>
-        <Text style={styles.label}>Dirección📍</Text>
-        <Text style={styles.value}>{entrega.direccion}</Text>
+        <Detail label="Dirección" value={entrega.direccion} icon="📍" />
+        <Detail label="Estado" value={entrega.estado} icon="🚚" />
+        <Detail label="Fecha de Creación" value={formatDate(entrega.fechaCreacion)} icon="📅" />
+        {entrega.fechaEntrega && (
+          <Detail label="Fecha de Entrega" value={formatDate(entrega.fechaEntrega)} icon="📦" />
+          )}
+        <Detail label="Observaciones" value={entrega.observaciones} icon="📝" />
       </View>
-
-      <View style={styles.dataCard}>
-        <Text style={styles.label}>Estado</Text>
-        <Text style={styles.value}>{entrega.estado}</Text>
-      </View>
-
-      <View style={styles.dataCard}>
-        <Text style={styles.label}>Fecha de Creación</Text>
-        <Text style={styles.value}>{entrega.fechaCreacion}</Text>
-      </View>
-
-      <View style={styles.dataCard}>
-        <Text style={styles.label}>Observaciones</Text>
-        <Text style={styles.value}>{entrega.observaciones}</Text>
-      </View>
-
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#007AFF" />
@@ -88,82 +125,169 @@ const EntregaDetails = () => {
               description="Destino de entrega"
             />
           </MapView>
+          {entrega.estado !== "ENTREGADO" && entrega.estado !== "CANCELADO" && (
+            <TouchableOpacity
+              style={styles.mapsButton}
+              onPress={openInGoogleMaps}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.mapsButtonText}>Navegar con Google Maps</Text>
+            </TouchableOpacity>
+          )}
         </View>
       ) : (
         <Text style={styles.errorText}>No se pudo obtener la ubicación.</Text>
       )}
+    </ScrollView>
+    { entrega.estado !== "ENTREGADO" && entrega.estado !== "CANCELADO" && (
+      <TouchableOpacity
+        style={styles.updateButton}
+        onPress={handleUpdateStatus}
+        disabled={updating}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.updateButtonText}>
+          {updating ? "Actualizando..." : "Actualizar Estado"}
+        </Text>
+      </TouchableOpacity>
+    )}
     </View>
   );
 };
 
+function Detail({ label, value, icon }) {
+  return (
+    <View style={styles.detailRow}>
+      <Text style={styles.detailLabel}>
+        {icon ? `${icon} ` : ""}
+        {label}:
+      </Text>
+      <Text style={styles.detailValue}>{value}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#FAFAFA",
-    padding: 20,
+    backgroundColor: "#F7F9FB",
+    padding: 0,
+    flexGrow: 1,
   },
   titleCard: {
     backgroundColor: "#007AFF",
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 24,
+    paddingVertical: 14,
+    borderRadius: 10,
+    marginHorizontal: 16,
+    marginTop: 12,
+    marginBottom: 10,
     alignItems: "center",
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-  },
-  titleText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-  },
-  dataCard: {
-    backgroundColor: "#E6F0FF",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
   },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
+  titleText: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#FFF",
+    letterSpacing: 0.5,
+  },
+  dataCard: {
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    marginHorizontal: 16,
+    marginBottom: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+  },
+  detailRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 8,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#E6F0FF",
+    paddingBottom: 6,
+  },
+  detailLabel: {
+    fontSize: 15,
+    fontWeight: "500",
     color: "#0056B3",
-    marginBottom: 6,
+    flex: 1.2,
   },
-  value: {
-    fontSize: 18,
-    color: "#333333",
+  detailValue: {
+    fontSize: 15,
+    color: "#222",
+    flex: 2,
+    textAlign: "right",
   },
   mapContainer: {
-    flex: 1,
-    marginTop: 20,
-    borderRadius: 12,
+    marginHorizontal: 16,
+    marginBottom: 18,
+    borderRadius: 10,
     overflow: "hidden",
-    height: 300,
+    height: 400,
+    elevation: 1,
+    backgroundColor: "#E6F0FF",
   },
   map: {
     flex: 1,
+    minHeight: 220,
   },
   loadingContainer: {
     marginTop: 20,
     alignItems: "center",
   },
   loadingText: {
-    marginTop: 12,
-    fontSize: 16,
+    marginTop: 10,
+    fontSize: 15,
     color: "#555",
   },
   errorText: {
     textAlign: "center",
-    marginTop: 20,
+    marginTop: 18,
     color: "red",
+    fontSize: 15,
+  },
+  updateButton: {
+    backgroundColor: "#007AFF",
+    margin: 18,
+    borderRadius: 10,
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 2,
+    shadowColor: "#007AFF",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+  },
+  updateButtonText: {
+    color: "#FFF",
+    fontSize: 17,
+    fontWeight: "bold",
+    letterSpacing: 0.5,
+  },
+  mapsButton: {
+    backgroundColor: "#34A853",
+    marginHorizontal: 16,
+    marginBottom: 18,
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  mapsButtonText: {
+    color: "#FFF",
     fontSize: 16,
+    fontWeight: "bold",
+    letterSpacing: 0.5,
   },
 });
 
