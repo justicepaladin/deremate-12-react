@@ -5,6 +5,7 @@ import Constants from 'expo-constants';
 
 const BACKEND = Constants.expoConfig.extra.apiUrl
 
+
 export const apiClient = axios.create({
   baseURL: `${BACKEND}`,
   headers: {
