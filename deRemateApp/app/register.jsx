@@ -242,6 +242,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  button: {
+    color: "#007AFF",
+  },
   linkCard: {
     backgroundColor: "#E6F0FF",
     padding: 14,

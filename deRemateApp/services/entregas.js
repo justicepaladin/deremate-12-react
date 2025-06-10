@@ -1,5 +1,24 @@
 import { apiClient } from "./api";
 
+export const ESTADOS_ENTREGA_PENDIENTE = ["PENDIENTE", "EN_VIAJE", "SIN_ASIGNAR"]
+export const ESTADOS_ENTREGA_HISTORIAL = ["ENTREGADO", "CANCELADO"]
+
+const getDescripcionEstado = (estado) =>
+({
+  PENDIENTE: "Pendiente",
+  EN_VIAJE: "En viaje",
+  SIN_ASIGNAR: "Sin asignar",
+  ENTREGADO: "Entregado",
+  CANCELADO: "Cancelado",
+}[estado])
+
+const agruparYContarEstadosEntrega = (entregas, listaEstados) =>
+  listaEstados.map((estado) => ({
+    estado,
+    descripcion: getDescripcionEstado(estado),
+    count: entregas.filter((e) => e.estado === estado).length,
+  }));
+
 export const useEntregaService = () => {
   const getEntregas = async () => {
     try {
@@ -13,9 +32,9 @@ export const useEntregaService = () => {
     }
   };
 
-  const getPendientes = async () => {
+  const getEntregasPendientes = async () => {
     try {
-      const response = await apiClient.get("/api/entregas/pendientes");
+      const response = await apiClient.get(`/api/entregas/mis-entregas?estados=${ESTADOS_ENTREGA_PENDIENTE.join(",")}`);
       return response.data;
     } catch (error) {
       console.error("Error al obtener entregas pendientes:", error);
@@ -24,6 +43,18 @@ export const useEntregaService = () => {
       );
     }
   };
+
+  const getHistorialEntregas = async () => {
+    try {
+      const response = await apiClient.get(`/api/entregas/mis-entregas?estados=${ESTADOS_ENTREGA_HISTORIAL.join(",")}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener entregas pendientes:", error);
+      throw new Error(
+        "No se pudieron obtener las entregas pendientes. Inténtalo de nuevo más tarde.",
+      );
+    }
+  }
 
   const getEntregaById = async (id) => {
     try {
@@ -51,8 +82,10 @@ export const useEntregaService = () => {
 
   return {
     getEntregas,
-    getPendientes,
+    getEntregasPendientes,
+    getHistorialEntregas,
     getEntregaById,
     updateStatus,
+    agruparYContarEstadosEntrega,
   };
 };

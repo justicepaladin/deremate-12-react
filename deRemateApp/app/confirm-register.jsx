@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  StyleSheet,
-  Alert,
   ActivityIndicator,
+  Alert,
+  Button,
+  KeyboardAvoidingView,
   Platform,
   ScrollView,
-  KeyboardAvoidingView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
 import { confirmarRegistro } from "../services/user";
 
 const ConfirmRegisterScreen = () => {
@@ -44,13 +44,13 @@ const ConfirmRegisterScreen = () => {
       Alert.alert(
         "Registro Confirmado",
         "Tu cuenta ha sido confirmada exitosamente. Ahora puedes iniciar sesión.",
-        [{ text: "Ir a Login", onPress: () => router.replace("login") }],
+        [{ text: "Ir a Login", onPress: () => router.replace("login") }]
       );
     } catch (err) {
       setError(
         typeof err?.message === "string" && err.message.trim().length > 0
           ? err.message
-          : "El código de confirmación es incorrecto o ha ocurrido un error.",
+          : "El código de confirmación es incorrecto o ha ocurrido un error."
       );
       console.error("Confirmation error:", err);
     } finally {
@@ -109,7 +109,7 @@ const ConfirmRegisterScreen = () => {
               title="Confirmar Código"
               onPress={handleConfirm}
               disabled={loading || !email}
-              color={Platform.OS === "android" ? "#FFFFFF" : "#007AFF"}
+              color={"#007AFF"}
             />
           )}
         </View>
@@ -118,7 +118,7 @@ const ConfirmRegisterScreen = () => {
           <Button
             title="Volver a Inicio de Sesión"
             onPress={handleGoToLogin}
-            color={Platform.OS === "android" ? "#FFFFFF" : "#8A8A8E"}
+            color={"#8A8A8E"}
           />
         </View>
       </ScrollView>

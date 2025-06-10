@@ -1,6 +1,6 @@
+import { authTokenManager } from "@/context/authManager";
 import { useRouter, useSegments } from "expo-router";
 import { createContext, useContext, useEffect, useState } from "react";
-import { getToken, removeToken, saveToken } from "../utils/auth";
 
 const AuthContext = createContext(undefined);
 
@@ -20,20 +20,15 @@ export const AuthProvider = ({ children }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const loadTokenFromStorage = async () => {
-      try {
-        const storedToken = await getToken();
-        if (storedToken) {
-          setToken(storedToken);
-        }
-      } catch (e) {
-        console.error("Error al cargar el token desde el almacenamiento:", e);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    const unsubscribe = authTokenManager.subscribe((newToken) => {
+      setToken(newToken);
+    });
 
-    loadTokenFromStorage();
+    authTokenManager.getToken().then(setToken);
+
+    setIsLoading(false);
+
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
@@ -70,24 +65,8 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token, segments, isLoading, router]);
 
-  const signIn = async (newToken) => {
-    setIsLoading(true);
-    await saveToken(newToken);
-    setToken(newToken);
-    setIsLoading(false);
-  };
-
-  const signOut = async () => {
-    setIsLoading(true);
-    await removeToken();
-    setToken(null);
-    setIsLoading(false);
-  };
-
   return (
-    <AuthContext.Provider
-      value={{ token, isAuthenticated: !!token, signIn, signOut, isLoading }}
-    >
+    <AuthContext.Provider value={{ token, isAuthenticated: !!token }}>
       {children}
     </AuthContext.Provider>
   );

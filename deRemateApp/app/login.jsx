@@ -1,3 +1,4 @@
+import { authTokenManager } from "@/context/authManager";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -13,7 +14,6 @@ import {
   View,
 } from "react-native";
 import HeaderLogo from "../components/HeaderLogo";
-import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/user";
 
 const LoginScreen = () => {
@@ -21,7 +21,6 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -34,7 +33,7 @@ const LoginScreen = () => {
     try {
       const data = await loginUser(email.trim(), password.trim());
       if (data && data.jwtToken) {
-        await signIn(data.jwtToken);
+        await authTokenManager.setToken(data.jwtToken);
 
         Alert.alert("Login exitoso", "Bienvenido/a a la aplicación.", [
           { text: "OK", onPress: () => null },
@@ -179,6 +178,9 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 16,
     fontWeight: "600",
+  },
+  button: {
+    color: "#007AFF",
   },
   linkCard: {
     backgroundColor: "#E6F0FF",
