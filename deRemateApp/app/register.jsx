@@ -2,7 +2,6 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Button,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -41,7 +40,7 @@ const RegisterScreen = () => {
 
   const handleRegister = async () => {
     setError(null);
-    
+
     // Check for empty fields and update invalidFields state
     const newInvalidFields = {
       nombre: !nombre.trim(),
@@ -51,7 +50,7 @@ const RegisterScreen = () => {
       password: !password.trim(),
       documento: !documento.trim(),
     };
-    
+
     setInvalidFields(newInvalidFields);
 
     if (
@@ -116,85 +115,67 @@ const RegisterScreen = () => {
         <HeaderLogo />
 
         <TextInput
-          style={[
-            styles.input,
-            invalidFields.nombre && styles.inputError
-          ]}
+          style={[styles.input, invalidFields.nombre && styles.inputError]}
           placeholder="Nombre"
           value={nombre}
           onChangeText={(text) => {
             setNombre(text);
-            setInvalidFields(prev => ({ ...prev, nombre: false }));
+            setInvalidFields((prev) => ({ ...prev, nombre: false }));
           }}
         />
         <TextInput
-          style={[
-            styles.input,
-            invalidFields.apellido && styles.inputError
-          ]}
+          style={[styles.input, invalidFields.apellido && styles.inputError]}
           placeholder="Apellido"
           value={apellido}
           onChangeText={(text) => {
             setApellido(text);
-            setInvalidFields(prev => ({ ...prev, apellido: false }));
+            setInvalidFields((prev) => ({ ...prev, apellido: false }));
           }}
         />
         <TextInput
-          style={[
-            styles.input,
-            invalidFields.email && styles.inputError
-          ]}
+          style={[styles.input, invalidFields.email && styles.inputError]}
           placeholder="Email"
           value={email}
           onChangeText={(text) => {
             setEmail(text);
-            setInvalidFields(prev => ({ ...prev, email: false }));
+            setInvalidFields((prev) => ({ ...prev, email: false }));
           }}
           keyboardType="email-address"
           autoCapitalize="none"
           autoComplete="email"
         />
         <TextInput
-          style={[
-            styles.input,
-            invalidFields.username && styles.inputError
-          ]}
+          style={[styles.input, invalidFields.username && styles.inputError]}
           placeholder="Nombre de Usuario"
           value={username}
           onChangeText={(text) => {
             setUsername(text);
-            setInvalidFields(prev => ({ ...prev, username: false }));
+            setInvalidFields((prev) => ({ ...prev, username: false }));
           }}
           autoCapitalize="none"
         />
         <TextInput
-          style={[
-            styles.input,
-            invalidFields.password && styles.inputError
-          ]}
+          style={[styles.input, invalidFields.password && styles.inputError]}
           placeholder="Contraseña"
           value={password}
           onChangeText={(text) => {
             setPassword(text);
-            setInvalidFields(prev => ({ ...prev, password: false }));
+            setInvalidFields((prev) => ({ ...prev, password: false }));
           }}
           secureTextEntry
         />
         <TextInput
-          style={[
-            styles.input,
-            invalidFields.documento && styles.inputError
-          ]}
+          style={[styles.input, invalidFields.documento && styles.inputError]}
           placeholder="Documento (DNI/Cédula)"
           value={documento}
           onChangeText={(text) => {
             setDocumento(text);
-            setInvalidFields(prev => ({ ...prev, documento: false }));
+            setInvalidFields((prev) => ({ ...prev, documento: false }));
           }}
           keyboardType="numeric"
         />
 
-
+        <View style={styles.buttonsPanel}>
           {error && <Text style={styles.errorText}>{error}</Text>}
 
           <TouchableOpacity
@@ -204,10 +185,7 @@ const RegisterScreen = () => {
             activeOpacity={0.8}
           >
             {loading ? (
-              <ActivityIndicator
-                size="small"
-                color="#FFF"
-              />
+              <ActivityIndicator size="small" color="#FFF" />
             ) : (
               <Text style={styles.registerButtonText}>Registrarse</Text>
             )}
@@ -292,6 +270,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 10,
+    marginBottom: 10,
   },
   registerButtonText: {
     color: "#FFF",
