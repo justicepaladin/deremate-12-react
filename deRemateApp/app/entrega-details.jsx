@@ -87,7 +87,7 @@ const EntregaDetails = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F7F9FB" }}>
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { paddingBottom: 180 }]}>
       <HeaderLogo />
       <View style={styles.titleCard}>
         <Text style={styles.titleText}>Detalles de Entrega</Text>
@@ -141,7 +141,7 @@ const EntregaDetails = () => {
       )}
     </ScrollView>
     { entrega.estado !== "ENTREGADO" && entrega.estado !== "CANCELADO" && (
-      <>
+      <View style={{ paddingBottom: 16, backgroundColor: "#F7F9FB" }}>
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={handleCancel}
@@ -162,7 +162,7 @@ const EntregaDetails = () => {
             {updating ? "Actualizando..." : "Actualizar Estado"}
           </Text>
         </TouchableOpacity>
-      </>
+      </View>
     )}
     </View>
   );
@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F7F9FB",
     padding: 0,
     flexGrow: 1,
+    // paddingBottom: 20,
   },
   titleCard: {
     backgroundColor: "#007AFF",
@@ -245,13 +246,13 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     borderRadius: 10,
     overflow: "hidden",
-    height: 400,
+    // height: 0,
     elevation: 1,
     backgroundColor: "#E6F0FF",
   },
   map: {
     flex: 1,
-    minHeight: 220,
+    minHeight: 250,
   },
   loadingContainer: {
     marginTop: 20,
