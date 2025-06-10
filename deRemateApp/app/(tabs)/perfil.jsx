@@ -1,5 +1,5 @@
+import { authTokenManager } from "@/context/authManager";
 import { useUsuario } from "@/hooks/useUsuario";
-import { authTokenManager } from "@/utils/authManager";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
   ActivityIndicator,
