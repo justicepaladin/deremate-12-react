@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -47,17 +48,23 @@ const EntregaDetails = () => {
 
 
   function formatDate(fecha) {
-  if (!fecha) return "";
-  const date = new Date(fecha);
-  if (isNaN(date)) return fecha;
-  return date.toLocaleString("es-AR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+    if (!fecha) return "";
+    const date = new Date(fecha);
+    if (isNaN(date)) return fecha;
+    return date.toLocaleString("es-AR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  const openInGoogleMaps = () => {
+    if (!location) return;
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}&travelmode=driving`;
+    Linking.openURL(url);
+  };
 
   const handleUpdateStatus = async () => {
     setUpdating(true);
@@ -118,6 +125,15 @@ const EntregaDetails = () => {
               description="Destino de entrega"
             />
           </MapView>
+          {entrega.estado !== "ENTREGADO" && entrega.estado !== "CANCELADO" && (
+            <TouchableOpacity
+              style={styles.mapsButton}
+              onPress={openInGoogleMaps}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.mapsButtonText}>Navegar con Google Maps</Text>
+            </TouchableOpacity>
+          )}
         </View>
       ) : (
         <Text style={styles.errorText}>No se pudo obtener la ubicación.</Text>
@@ -255,6 +271,21 @@ const styles = StyleSheet.create({
   updateButtonText: {
     color: "#FFF",
     fontSize: 17,
+    fontWeight: "bold",
+    letterSpacing: 0.5,
+  },
+  mapsButton: {
+    backgroundColor: "#34A853",
+    marginHorizontal: 16,
+    marginBottom: 18,
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  mapsButtonText: {
+    color: "#FFF",
+    fontSize: 16,
     fontWeight: "bold",
     letterSpacing: 0.5,
   },
