@@ -1,4 +1,5 @@
 import { useEntregaService } from "@/services/entregas";
+import { formatDate, formatEstado } from "@/utils/Formatters";
 import Constants from "expo-constants";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -45,20 +46,6 @@ const EntregaDetails = () => {
         setLoading(false);
       });
   }, []);
-
-
-  function formatDate(fecha) {
-    if (!fecha) return "";
-    const date = new Date(fecha);
-    if (isNaN(date)) return fecha;
-    return date.toLocaleString("es-AR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
 
   const openInGoogleMaps = () => {
     if (!location) return;
@@ -107,7 +94,7 @@ const EntregaDetails = () => {
       </View>
       <View style={styles.dataCard}>
         <Detail label="Dirección" value={entrega.direccion} icon="📍" />
-        <Detail label="Estado" value={entrega.estado} icon="🚚" />
+        <Detail label="Estado" value={formatEstado(entrega.estado)} icon="🚚" />
         <Detail label="Fecha de Creación" value={formatDate(entrega.fechaCreacion)} icon="📅" />
         {entrega.fechaEntrega && (
           <Detail label="Fecha de Entrega" value={formatDate(entrega.fechaEntrega)} icon="📦" />
