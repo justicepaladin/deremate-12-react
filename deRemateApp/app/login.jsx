@@ -4,7 +4,6 @@ import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Button,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -57,51 +56,55 @@ const LoginScreen = () => {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <HeaderLogo />
-        <Text style={styles.title}>Iniciar Sesión</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoComplete="email"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Contraseña"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          autoComplete="password"
-        />
-
-        {error && <Text style={styles.errorText}>{error}</Text>}
-
-        <View style={styles.buttonContainer}>
-          {loading ? (
-            <ActivityIndicator
-              size="large"
-              color={styles.buttonActivityIndicator.color}
-            />
-          ) : (
-            <Button
-              title="Iniciar sesión"
-              onPress={handleLogin}
-              disabled={loading}
-              color={styles.button.color}
-            />
-          )}
+        <View style={styles.titleCard}>
+          <Text style={styles.titleText}>Inicio de Sesión</Text>
         </View>
 
-        <TouchableOpacity onPress={() => router.push("register")}>
-          <Text style={styles.linkText}>
-            ¿No tienes cuenta? Regístrate aquí
-          </Text>
+        <View style={styles.dataCard}>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Contraseña"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            autoComplete="password"
+          />
+
+          {error && <Text style={styles.errorText}>{error}</Text>}
+
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={handleLogin}
+            disabled={loading}
+            activeOpacity={0.8}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#FFF" />
+            ) : (
+              <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity onPress={() => router.push("register")}
+          style={styles.linkCard}
+        >
+          <Text style={styles.linkText}>¿No tienes cuenta? Regístrate aquí</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push("password-recovery")}>
+        <TouchableOpacity onPress={() => router.push("password-recovery")}
+          style={styles.linkCard}
+        >
           <Text style={styles.linkText}>¿Olvidaste tu contraseña?</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -112,31 +115,43 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#F7F9FB",
   },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: "center",
-    alignItems: "center",
     paddingVertical: 30,
     paddingHorizontal: 24,
   },
-  logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 24,
-    resizeMode: "contain",
+  titleCard: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 14,
+    borderRadius: 10,
+    marginTop: 12,
+    marginBottom: 16,
+    alignItems: "center",
+    elevation: 2,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 24,
-    color: "#333",
+  titleText: {
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#FFF",
+  },
+  dataCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    padding: 16,
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+    marginBottom: 20,
   },
   input: {
     width: "100%",
     height: 50,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F5F5F5",
     borderColor: "#DDD",
     borderWidth: 1,
     borderRadius: 8,
@@ -151,22 +166,33 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 14,
   },
-  buttonContainer: {
-    width: "100%",
+  loginButton: {
+    backgroundColor: "#007AFF",
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: 10,
-    marginBottom: 15,
+  },
+  loginButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "600",
   },
   button: {
     color: "#007AFF",
   },
-  buttonActivityIndicator: {
-    color: "#007AFF",
+  linkCard: {
+    backgroundColor: "#E6F0FF",
+    padding: 14,
+    borderRadius: 8,
+    marginBottom: 12,
   },
   linkText: {
     color: "#007AFF",
-    marginTop: 16,
     textAlign: "center",
     fontSize: 15,
+    fontWeight: "500",
   },
 });
 
