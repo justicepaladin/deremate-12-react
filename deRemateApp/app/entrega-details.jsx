@@ -1,4 +1,5 @@
 import { useEntregaService } from "@/services/entregas";
+import { formatDate, formatEstado } from "@/utils/Formatters";
 import Constants from "expo-constants";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -46,20 +47,6 @@ const EntregaDetails = () => {
       });
   }, []);
 
-
-  function formatDate(fecha) {
-    if (!fecha) return "";
-    const date = new Date(fecha);
-    if (isNaN(date)) return fecha;
-    return date.toLocaleString("es-AR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
-
   const openInGoogleMaps = () => {
     if (!location) return;
     const url = `https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}&travelmode=driving`;
@@ -100,14 +87,14 @@ const EntregaDetails = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F7F9FB" }}>
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { paddingBottom: 180 }]}>
       <HeaderLogo />
       <View style={styles.titleCard}>
         <Text style={styles.titleText}>Detalles de Entrega</Text>
       </View>
       <View style={styles.dataCard}>
         <Detail label="Dirección" value={entrega.direccion} icon="📍" />
-        <Detail label="Estado" value={entrega.estado} icon="🚚" />
+        <Detail label="Estado" value={formatEstado(entrega.estado)} icon="🚚" />
         <Detail label="Fecha de Creación" value={formatDate(entrega.fechaCreacion)} icon="📅" />
         {entrega.fechaEntrega && (
           <Detail label="Fecha de Entrega" value={formatDate(entrega.fechaEntrega)} icon="📦" />
@@ -154,7 +141,7 @@ const EntregaDetails = () => {
       )}
     </ScrollView>
     { entrega.estado !== "ENTREGADO" && entrega.estado !== "CANCELADO" && (
-      <>
+      <View style={{ paddingBottom: 16, backgroundColor: "#F7F9FB" }}>
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={handleCancel}
@@ -175,7 +162,7 @@ const EntregaDetails = () => {
             {updating ? "Actualizando..." : "Actualizar Estado"}
           </Text>
         </TouchableOpacity>
-      </>
+      </View>
     )}
     </View>
   );
@@ -198,6 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F7F9FB",
     padding: 0,
     flexGrow: 1,
+    // paddingBottom: 20,
   },
   titleCard: {
     backgroundColor: "#007AFF",
@@ -258,13 +246,13 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     borderRadius: 10,
     overflow: "hidden",
-    height: 400,
+    // height: 0,
     elevation: 1,
     backgroundColor: "#E6F0FF",
   },
   map: {
     flex: 1,
-    minHeight: 220,
+    minHeight: 250,
   },
   loadingContainer: {
     marginTop: 20,
