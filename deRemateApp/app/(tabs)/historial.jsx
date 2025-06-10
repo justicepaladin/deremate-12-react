@@ -33,7 +33,7 @@ export default function PendientesScreen() {
       <HeaderLogo />
 
       <View style={styles.titleCard}>
-        <Text style={styles.titleText}>Entregas Pendientes</Text>
+        <Text style={styles.titleText}>Historial de Entregas</Text>
       </View>
 
       <TotalesPorEstado
