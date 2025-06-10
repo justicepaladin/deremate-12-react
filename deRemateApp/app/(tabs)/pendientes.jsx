@@ -1,37 +1,32 @@
 import { ListEntregaItem } from "@/components/ListEntregaItem";
+import { TotalesPorEstado } from "@/components/TotalesPorEstado";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import HeaderLogo from "../../components/HeaderLogo";
-import { useEntregaService } from "../../services/entregas";
+import {
+  ESTADOS_ENTREGA_PENDIENTE,
+  useEntregaService,
+} from "../../services/entregas";
 
 export default function PendientesScreen() {
   const [entregas, setEntregas] = useState([]);
   const entregasService = useEntregaService();
 
-
   const fetchEntregasPendientes = async () => {
     try {
-      const data = await entregasService.getPendientes();
+      const data = await entregasService.getEntregasPendientes();
       setEntregas(data);
     } catch (error) {
       console.error(error);
     }
   };
 
-
   useFocusEffect(
     useCallback(() => {
       fetchEntregasPendientes();
     }, [])
   );
-
-  
 
   return (
     <View style={styles.container}>
@@ -41,12 +36,15 @@ export default function PendientesScreen() {
         <Text style={styles.titleText}>Entregas Pendientes</Text>
       </View>
 
+      <TotalesPorEstado
+        entregas={entregas}
+        estados={ESTADOS_ENTREGA_PENDIENTE}
+      />
+
       <FlatList
         data={entregas}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <ListEntregaItem item={item} />
-        )}
+        renderItem={({ item }) => <ListEntregaItem item={item} />}
         contentContainerStyle={styles.list}
       />
     </View>
