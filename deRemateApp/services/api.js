@@ -1,6 +1,5 @@
+import { authTokenManager } from "@/utils/authManager";
 import axios from "axios";
-import Constants from 'expo-constants';
-import { getToken } from "../utils/auth";
 
 
 const TU_BACKEND_URL = Constants.expoConfig.extra.apiUrl
@@ -16,7 +15,7 @@ export const apiClient = axios.create({
 // Interceptor para agregar el token de autorización a las peticiones
 apiClient.interceptors.request.use(
   async (config) => {
-    const token = await getToken();
+    const token = await authTokenManager.getToken();
     console.log("TOKEN:", token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -58,6 +57,19 @@ apiClient.interceptors.response.use(
       `Error response from ${error.config?.url}:`,
       error.response?.data || error.message,
     );
+    return Promise.reject(error);
+  },
+);
+
+apiClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    if (error.response && error.response.status === 403) {
+      console.log("Error 403: Acceso denegado. Se hace logout");
+      await authTokenManager.clearToken()
+    }
     return Promise.reject(error);
   },
 );

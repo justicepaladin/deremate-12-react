@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   button: {
-    color: Platform.OS === "android" ? "#FFFFFF" : "#007AFF",
+    color: "#007AFF",
   },
   buttonActivityIndicator: {
     color: "#007AFF",

@@ -1,17 +1,15 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  ActivityIndicator,
-  Image,
-} from "react-native";
-import { useAuth } from "@/context/AuthContext";
 import { useUsuario } from "@/hooks/useUsuario";
+import { authTokenManager } from "@/utils/authManager";
 import { MaterialIcons } from "@expo/vector-icons";
+import {
+  ActivityIndicator,
+  Button,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 export default function PerfilScreen() {
-  const { signOut } = useAuth();
   const { usuario, loading, error } = useUsuario();
 
   if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
@@ -20,7 +18,7 @@ export default function PerfilScreen() {
     return (
       <View style={styles.container}>
         <Text>Error al cargar el perfil.</Text>
-        <Button title="Cerrar sesión" onPress={signOut} />
+        <Button title="Cerrar sesión" onPress={authTokenManager.clearToken} />
       </View>
     );
   }
@@ -59,7 +57,11 @@ export default function PerfilScreen() {
       </View>
 
       <View style={styles.buttonContainer}>
-        <Button title="Cerrar sesión" onPress={signOut} color="#007aff" />
+        <Button
+          title="Cerrar sesión"
+          onPress={authTokenManager.clearToken}
+          color="#007aff"
+        />
       </View>
     </View>
   );
