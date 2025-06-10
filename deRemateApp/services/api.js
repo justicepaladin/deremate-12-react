@@ -1,5 +1,6 @@
 import { authTokenManager } from "@/utils/authManager";
 import axios from "axios";
+import Constants from 'expo-constants';
 
 
 const TU_BACKEND_URL = Constants.expoConfig.extra.apiUrl
