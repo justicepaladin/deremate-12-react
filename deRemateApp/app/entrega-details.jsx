@@ -84,6 +84,20 @@ const EntregaDetails = () => {
     }
   };
 
+  const handleCancel = async () => {
+    setUpdating(true);
+    try {
+      await entregaService.updateStatus(entrega.id, "CANCELADO");
+      Alert.alert("Entrega cancelada", "La entrega ha sido cancelada exitosamente.");
+      router.back();
+    } catch (error) {
+      Alert.alert("Error", "No se pudo cancelar la entrega.");
+      console.error(error);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "#F7F9FB" }}>
     <ScrollView contentContainerStyle={styles.container}>
@@ -140,16 +154,28 @@ const EntregaDetails = () => {
       )}
     </ScrollView>
     { entrega.estado !== "ENTREGADO" && entrega.estado !== "CANCELADO" && (
-      <TouchableOpacity
-        style={styles.updateButton}
-        onPress={handleUpdateStatus}
-        disabled={updating}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.updateButtonText}>
-          {updating ? "Actualizando..." : "Actualizar Estado"}
-        </Text>
-      </TouchableOpacity>
+      <>
+        <TouchableOpacity
+          style={styles.cancelButton}
+          onPress={handleCancel}
+          disabled={updating}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.cancelButtonText}>
+            {updating ? "Cancelando..." : "Cancelar Entrega"}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.updateButton}
+          onPress={handleUpdateStatus}
+          disabled={updating}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.updateButtonText}>
+            {updating ? "Actualizando..." : "Actualizar Estado"}
+          </Text>
+        </TouchableOpacity>
+      </>
     )}
     </View>
   );
@@ -258,6 +284,7 @@ const styles = StyleSheet.create({
   updateButton: {
     backgroundColor: "#007AFF",
     margin: 18,
+    marginTop: 8,
     borderRadius: 10,
     paddingVertical: 16,
     alignItems: "center",
@@ -267,6 +294,26 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
+  },
+  cancelButton: {
+    backgroundColor: "#DC2626",
+    marginHorizontal: 18,
+    marginTop: 18,
+    borderRadius: 10,
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 2,
+    shadowColor: "#DC2626",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+  },
+  cancelButtonText: {
+    color: "#FFF",
+    fontSize: 17,
+    fontWeight: "bold",
+    letterSpacing: 0.5,
   },
   updateButtonText: {
     color: "#FFF",

@@ -3,10 +3,10 @@ import axios from "axios";
 import Constants from 'expo-constants';
 
 
-const TU_BACKEND_URL = "http://192.168.0.8:8080"// Constants.expoConfig.extra.apiUrl
+const BACKEND_URL = "http://192.168.0.108:8080"// Constants.expoConfig.extra.apiUrl
 
 export const apiClient = axios.create({
-  baseURL: `${TU_BACKEND_URL}`,
+  baseURL: `${BACKEND_URL}`,
   headers: {
     "Content-Type": "application/json",
   },
