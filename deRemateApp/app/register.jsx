@@ -24,6 +24,14 @@ const RegisterScreen = () => {
   const [documento, setDocumento] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [invalidFields, setInvalidFields] = useState({
+    nombre: false,
+    apellido: false,
+    email: false,
+    username: false,
+    password: false,
+    documento: false,
+  });
   const router = useRouter();
 
   const validateEmail = (emailToValidate) => {
@@ -33,6 +41,18 @@ const RegisterScreen = () => {
 
   const handleRegister = async () => {
     setError(null);
+    
+    // Check for empty fields and update invalidFields state
+    const newInvalidFields = {
+      nombre: !nombre.trim(),
+      apellido: !apellido.trim(),
+      email: !email.trim(),
+      username: !username.trim(),
+      password: !password.trim(),
+      documento: !documento.trim(),
+    };
+    
+    setInvalidFields(newInvalidFields);
 
     if (
       !nombre.trim() ||
@@ -97,45 +117,81 @@ const RegisterScreen = () => {
         <Text style={styles.title}>Registro de Usuario</Text>
 
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            invalidFields.nombre && styles.inputError
+          ]}
           placeholder="Nombre"
           value={nombre}
-          onChangeText={setNombre}
+          onChangeText={(text) => {
+            setNombre(text);
+            setInvalidFields(prev => ({ ...prev, nombre: false }));
+          }}
         />
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            invalidFields.apellido && styles.inputError
+          ]}
           placeholder="Apellido"
           value={apellido}
-          onChangeText={setApellido}
+          onChangeText={(text) => {
+            setApellido(text);
+            setInvalidFields(prev => ({ ...prev, apellido: false }));
+          }}
         />
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            invalidFields.email && styles.inputError
+          ]}
           placeholder="Email"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(text) => {
+            setEmail(text);
+            setInvalidFields(prev => ({ ...prev, email: false }));
+          }}
           keyboardType="email-address"
           autoCapitalize="none"
           autoComplete="email"
         />
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            invalidFields.username && styles.inputError
+          ]}
           placeholder="Nombre de Usuario"
           value={username}
-          onChangeText={setUsername}
+          onChangeText={(text) => {
+            setUsername(text);
+            setInvalidFields(prev => ({ ...prev, username: false }));
+          }}
           autoCapitalize="none"
         />
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            invalidFields.password && styles.inputError
+          ]}
           placeholder="Contraseña"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text) => {
+            setPassword(text);
+            setInvalidFields(prev => ({ ...prev, password: false }));
+          }}
           secureTextEntry
         />
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            invalidFields.documento && styles.inputError
+          ]}
           placeholder="Documento (DNI/Cédula)"
           value={documento}
-          onChangeText={setDocumento}
+          onChangeText={(text) => {
+            setDocumento(text);
+            setInvalidFields(prev => ({ ...prev, documento: false }));
+          }}
           keyboardType="numeric"
         />
 
@@ -197,6 +253,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontSize: 16,
     color: "#333",
+  },
+  inputError: {
+    borderColor: "red",
+    borderWidth: 2,
   },
   errorText: {
     color: "red",
