@@ -20,6 +20,7 @@ import {
 import Geocoder from "react-native-geocoding";
 import MapView, { Marker } from "react-native-maps";
 import HeaderLogo from "../components/HeaderLogo";
+import { StarRating } from "../components/StarRating";
 
 const EntregaDetails = () => {
   const entregaService = useEntregaService();
@@ -152,6 +153,23 @@ const EntregaDetails = () => {
               value={entrega.observaciones}
               icon="📝"
             />
+            {entrega.estado === "ENTREGADO" &&
+              (entrega.comentario || entrega.calificacion != null) && (
+                <View style={styles.ratingCard}>
+                  {entrega.comentario && (
+                    <Detail
+                      label="Comentario"
+                      value={`"${entrega.comentario}"`}
+                      icon="🗣️"
+                    />
+                  )}
+                  {entrega.calificacion != null && (
+                    <View style={{ marginTop: 6 }}>
+                      <StarRating rating={entrega.calificacion} size={22} />
+                    </View>
+                  )}
+                </View>
+              )}
           </View>
           {loading ? (
             <View style={styles.loadingContainer}>
@@ -333,6 +351,16 @@ const styles = StyleSheet.create({
     color: "#222",
     flex: 2,
     textAlign: "right",
+  },
+  ratingCard: {
+    marginTop: 10,
+    paddingTop: 12,
+  },
+  comentarioText: {
+    fontSize: 15,
+    color: "#0056B3",
+    fontStyle: "italic",
+    marginBottom: 4,
   },
   mapContainer: {
     marginHorizontal: 16,
