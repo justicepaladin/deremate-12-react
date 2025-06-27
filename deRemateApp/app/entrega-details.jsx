@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   KeyboardAvoidingView,
   Linking,
   Platform,
@@ -31,6 +32,8 @@ const EntregaDetails = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [showCodeInput, setShowCodeInput] = useState(false);
+  const [mostrarImagen, setMostrarImagen] = useState(false);
+
   const router = useRouter();
 
   const apiKey = Constants.expoConfig.extra.googleMapsApiKey;
@@ -170,6 +173,51 @@ const EntregaDetails = () => {
                   )}
                 </View>
               )}
+
+            {entrega.estado === "ENTREGADO" && entrega.imagen && (
+              <>
+                <TouchableOpacity
+                  onPress={() => setMostrarImagen(!mostrarImagen)}
+                  style={{
+                    backgroundColor: "#E6F0FF",
+                    paddingVertical: 10,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    marginBottom: mostrarImagen ? 10 : 0,
+                    marginTop: 10,
+                  }}
+                  activeOpacity={0.85}
+                >
+                  <Text style={{ color: "#0056B3", fontWeight: "bold" }}>
+                    {mostrarImagen ? "Ocultar imagen 📁" : "Ver comprobante 📦"}
+                  </Text>
+                </TouchableOpacity>
+
+                {mostrarImagen && (
+                  <View
+                    style={{
+                      borderRadius: 8,
+                      overflow: "hidden",
+                      borderWidth: 1,
+                      borderColor: "#C3DAFF",
+                      marginTop: 10,
+                    }}
+                  >
+                    <Image
+                      source={{
+                        uri: `http://192.168.100.34:8080/images/${entrega.imagen}.png`,
+                      }}
+                      style={{
+                        width: "100%",
+                        height: 200,
+                        resizeMode: "contain",
+                        backgroundColor: "#fff",
+                      }}
+                    />
+                  </View>
+                )}
+              </>
+            )}
           </View>
           {loading ? (
             <View style={styles.loadingContainer}>
@@ -296,7 +344,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F7F9FB",
     padding: 0,
     flexGrow: 1,
-    // paddingBottom: 20,
   },
   titleCard: {
     backgroundColor: "#007AFF",
@@ -367,7 +414,6 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     borderRadius: 10,
     overflow: "hidden",
-    // height: 0,
     elevation: 1,
     backgroundColor: "#E6F0FF",
   },
