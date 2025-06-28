@@ -1,13 +1,12 @@
 import { apiClient } from "./api";
 
-export const ESTADOS_ENTREGA_PENDIENTE = ["PENDIENTE", "EN_VIAJE", "SIN_ASIGNAR"]
+export const ESTADOS_ENTREGA_PENDIENTE = ["PENDIENTE", "EN_VIAJE"]
 export const ESTADOS_ENTREGA_HISTORIAL = ["ENTREGADO", "CANCELADO"]
 
 const getDescripcionEstado = (estado) =>
 ({
   PENDIENTE: "Pendiente",
   EN_VIAJE: "En viaje",
-  SIN_ASIGNAR: "Sin asignar",
   ENTREGADO: "Entregado",
   CANCELADO: "Cancelado",
 }[estado])
