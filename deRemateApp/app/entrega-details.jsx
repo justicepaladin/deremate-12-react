@@ -1,5 +1,6 @@
 import { useEntregaService } from "@/services/entregas";
 import { formatDate, formatEstado } from "@/utils/Formatters";
+import { Ionicons } from '@expo/vector-icons';
 import Constants from "expo-constants";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -89,6 +90,14 @@ const EntregaDetails = () => {
     <View style={{ flex: 1, backgroundColor: "#F7F9FB" }}>
     <ScrollView contentContainerStyle={[styles.container, { paddingBottom: 180 }]}>
       <HeaderLogo />
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.back()}
+        activeOpacity={0.7}
+      >
+        <Ionicons name="arrow-back" size={24} color="#007AFF" />
+        <Text style={styles.backButtonText}>Volver</Text>
+      </TouchableOpacity>
       <View style={styles.titleCard}>
         <Text style={styles.titleText}>Detalles de Entrega</Text>
       </View>
@@ -323,6 +332,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     letterSpacing: 0.5,
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 16,
+    marginTop: 10,
+    marginBottom: 2,
+  },
+  backButtonText: {
+    color: "#007AFF",
+    fontSize: 16,
+    marginLeft: 6,
+    fontWeight: "500",
   },
 });
 

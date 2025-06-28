@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "deRemateApp",
+    "projectId": "uade-deremate-app",
     "slug": "deRemateApp",
     "version": "1.0.0",
     "orientation": "portrait",

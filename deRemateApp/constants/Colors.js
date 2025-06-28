@@ -1,5 +1,5 @@
 const tintColorLight = "#0a7ea4";
-const tintColorDark = "#fff";
+const tintColorDark = "#4FC3F7"; // Use a visible blue for dark mode
 
 export const Colors = {
   light: {
@@ -8,7 +8,7 @@ export const Colors = {
     tint: tintColorLight,
     icon: "#687076",
     tabIconDefault: "#687076",
-    tabIconSelected: tintColorLight,
+    tabIconSelected: tintColorLight, // Visible blue for selected tab
   },
   dark: {
     text: "#ECEDEE",
@@ -16,6 +16,6 @@ export const Colors = {
     tint: tintColorDark,
     icon: "#9BA1A6",
     tabIconDefault: "#9BA1A6",
-    tabIconSelected: tintColorDark,
+    tabIconSelected: tintColorDark, // Visible blue for selected tab in dark mode
   },
 };
