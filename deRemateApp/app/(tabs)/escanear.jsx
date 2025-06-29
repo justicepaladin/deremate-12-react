@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import QRScanner from '@/components/QRScanner';
-import { useEntregaService } from '@/services/entregas';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useEntregaService } from '@/services/entregas';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
 export default function EscanearScreen() {
@@ -15,6 +15,9 @@ export default function EscanearScreen() {
   const colorScheme = useColorScheme();
 
   const handleQRScanned = async (qrContent) => {
+    if (isProcessing) {
+      return;
+    }
     setIsProcessing(true);
     try {
       const result = await escanearQR(qrContent);
@@ -70,7 +73,7 @@ export default function EscanearScreen() {
             size={120} 
             color={Colors[colorScheme].tint} 
           />
-        </View>
+        </View> 
 
         <Text style={[styles.description, { color: Colors[colorScheme].text }]}>
           Para procesar una entrega, escanee el código QR que se encuentra en el producto o paquete correspondiente.

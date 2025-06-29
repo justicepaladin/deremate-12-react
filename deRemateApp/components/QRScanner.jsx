@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import React, { useRef } from 'react';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function QRScanner({ onQRScanned, onClose }) {
   const [permission, requestPermission] = useCameraPermissions();
-  const [scanned, setScanned] = useState(false);
   const colorScheme = useColorScheme();
+  const alertOpenRef = useRef(false)
 
   if (!permission) {
     return null;
@@ -29,14 +29,14 @@ export default function QRScanner({ onQRScanned, onClose }) {
   }
 
   const handleBarCodeScanned = ({ type, data }) => {
-    if (scanned) return;
-    setScanned(true);
+    if (alertOpenRef.current) return;
+    alertOpenRef.current = true;
     Alert.alert(
       'QR Detectado',
       `¿Desea procesar este código QR?\n\nContenido: ${data}`,
       [
-        { text: 'Cancelar', style: 'cancel', onPress: () => setScanned(false) },
-        { text: 'Procesar', onPress: () => { onQRScanned(data); setScanned(false); } },
+        { text: 'Cancelar', style: 'cancel', onPress: () => alertOpenRef.current = false },
+        { text: 'Procesar', onPress: () => { onQRScanned(data); alertOpenRef.current = false } },
       ]
     );
   };
@@ -45,7 +45,7 @@ export default function QRScanner({ onQRScanned, onClose }) {
     <View style={styles.container}>
       <CameraView
         style={styles.camera}
-        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+        onBarcodeScanned={alertOpenRef.current ? undefined : handleBarCodeScanned}
         barcodeScannerSettings={{
           barcodeTypes: ['qr'],
         }}
@@ -62,8 +62,8 @@ export default function QRScanner({ onQRScanned, onClose }) {
             <View style={styles.scanFrame} />
             <Text style={styles.scanText}>Coloque el código QR dentro del marco</Text>
           </View>
-          {scanned && (
-            <TouchableOpacity style={styles.scanAgainButton} onPress={() => setScanned(false)}>
+          {alertOpenRef.current && (
+            <TouchableOpacity style={styles.scanAgainButton} onPress={() => alertOpenRef.current = false}>
               <Text style={styles.scanAgainText}>Escanear de nuevo</Text>
             </TouchableOpacity>
           )}
