@@ -79,12 +79,27 @@ export const useEntregaService = () => {
     }
   }
 
+  const escanearQR = async (contenidoQR) => {
+    try {
+      const response = await apiClient.post("/api/entregas/escanear-qr", {
+        contenidoQR: contenidoQR
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error al escanear QR:", error);
+      throw new Error(
+        "No se pudo procesar el QR. Verifique que la entrega esté en estado PENDIENTE.",
+      );
+    }
+  }
+
   return {
     getEntregas,
     getEntregasPendientes,
     getHistorialEntregas,
     getEntregaById,
     updateStatus,
+    escanearQR,
     agruparYContarEstadosEntrega,
   };
 };
