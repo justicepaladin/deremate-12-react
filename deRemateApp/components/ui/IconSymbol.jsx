@@ -10,6 +10,7 @@ const MAPPING = {
   qrcode: "qr-code-scanner",
   camera: "camera-alt",
   xmark: "close",
+  keyboard: "keyboard",
 };
 
 export function IconSymbol({ name, size = 24, color, style = null }) {

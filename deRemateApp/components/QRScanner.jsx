@@ -1,95 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import Toast from 'react-native-toast-message';
 
 export default function QRScanner({ onQRScanned, onClose }) {
-  const [hasPermission, setHasPermission] = useState(null);
+  const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const colorScheme = useColorScheme();
 
-  useEffect(() => {
-    const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-    };
-
-    getBarCodeScannerPermissions();
-  }, []);
-
-  const handleBarCodeScanned = ({ type, data }) => {
-    setScanned(true);
-    
-    // Verificar que sea un código QR
-    if (type === BarCodeScanner.Constants.BarCodeType.qr) {
-      console.log('QR escaneado:', data);
-      
-      // Mostrar confirmación antes de procesar
-      Alert.alert(
-        'QR Detectado',
-        `¿Desea procesar este código QR?\n\nContenido: ${data}`,
-        [
-          {
-            text: 'Cancelar',
-            style: 'cancel',
-            onPress: () => setScanned(false),
-          },
-          {
-            text: 'Procesar',
-            onPress: () => {
-              onQRScanned(data);
-              setScanned(false);
-            },
-          },
-        ]
-      );
-    } else {
-      Toast.show({
-        type: 'error',
-        text1: 'Código no válido',
-        text2: 'Por favor, escanee un código QR válido',
-        position: 'top',
-      });
-      setScanned(false);
-    }
-  };
-
-  const resetScanner = () => {
-    setScanned(false);
-  };
-
-  if (hasPermission === null) {
-    return (
-      <View style={styles.container}>
-        <Text style={[styles.text, { color: Colors[colorScheme].text }]}>
-          Solicitando permiso de cámara...
-        </Text>
-      </View>
-    );
+  if (!permission) {
+    return null;
   }
 
-  if (hasPermission === false) {
+  if (!permission.granted) {
     return (
-      <View style={styles.container}>
-        <Text style={[styles.text, { color: Colors[colorScheme].text }]}>
-          Sin acceso a la cámara
-        </Text>
-        <TouchableOpacity style={styles.button} onPress={onClose}>
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={[styles.text, { color: Colors[colorScheme].text }]}>Solicitando permiso de cámara...</Text>
+        <TouchableOpacity onPress={requestPermission} style={[styles.button, { backgroundColor: Colors[colorScheme].tint }]}> 
+          <Text style={styles.buttonText}>Permitir</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, { backgroundColor: Colors[colorScheme].tint, marginTop: 10 }]} onPress={onClose}>
           <Text style={styles.buttonText}>Cerrar</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
+  const handleBarCodeScanned = ({ type, data }) => {
+    if (scanned) return;
+    setScanned(true);
+    Alert.alert(
+      'QR Detectado',
+      `¿Desea procesar este código QR?\n\nContenido: ${data}`,
+      [
+        { text: 'Cancelar', style: 'cancel', onPress: () => setScanned(false) },
+        { text: 'Procesar', onPress: () => { onQRScanned(data); setScanned(false); } },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <BarCodeScanner
+      <CameraView
         style={styles.camera}
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+        barcodeScannerSettings={{
+          barcodeTypes: ['qr'],
+        }}
       >
         <View style={styles.overlay}>
           <View style={styles.header}>
@@ -99,108 +58,108 @@ export default function QRScanner({ onQRScanned, onClose }) {
             <Text style={styles.headerText}>Escanear QR</Text>
             <View style={styles.placeholder} />
           </View>
-          
           <View style={styles.scanArea}>
             <View style={styles.scanFrame} />
-            <Text style={styles.scanText}>
-              Coloque el código QR dentro del marco
-            </Text>
+            <Text style={styles.scanText}>Coloque el código QR dentro del marco</Text>
           </View>
-
           {scanned && (
-            <TouchableOpacity style={styles.scanAgainButton} onPress={resetScanner}>
+            <TouchableOpacity style={styles.scanAgainButton} onPress={() => setScanned(false)}>
               <Text style={styles.scanAgainText}>Escanear de nuevo</Text>
             </TouchableOpacity>
           )}
         </View>
-      </BarCodeScanner>
+      </CameraView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'black',
+  container: { 
+    flex: 1, 
+    backgroundColor: 'black' 
   },
-  camera: {
-    flex: 1,
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  camera: { 
+    flex: 1 
+  },
+  overlay: { 
+    flex: 1, 
+    backgroundColor: 'rgba(0, 0, 0, 0.5)' 
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
     alignItems: 'center',
-    paddingTop: 50,
-    paddingHorizontal: 20,
+    paddingTop: 50, 
+    paddingHorizontal: 20, 
     paddingBottom: 20,
   },
   closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 40, 
+    height: 40, 
+    borderRadius: 20, 
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
+    justifyContent: 'center', 
     alignItems: 'center',
   },
-  headerText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+  headerText: { 
+    color: 'white', 
+    fontSize: 18, 
+    fontWeight: 'bold' 
   },
-  placeholder: {
-    width: 40,
+  placeholder: { 
+    width: 40 
   },
-  scanArea: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 40,
+  scanArea: { 
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    paddingHorizontal: 40 
   },
   scanFrame: {
-    width: 250,
-    height: 250,
-    borderWidth: 2,
-    borderColor: 'white',
-    borderRadius: 20,
+    width: 250, 
+    height: 250, 
+    borderWidth: 2, 
+    borderColor: 'white', 
+    borderRadius: 20, 
     backgroundColor: 'transparent',
   },
-  scanText: {
-    color: 'white',
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: 20,
-    paddingHorizontal: 20,
+  scanText: { 
+    color: 'white', 
+    fontSize: 16, 
+    textAlign: 'center', 
+    marginTop: 20, 
+    paddingHorizontal: 20 
   },
   scanAgainButton: {
-    backgroundColor: 'white',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 25,
+    backgroundColor: 'white', 
+    paddingHorizontal: 30, 
+    paddingVertical: 15, 
+    borderRadius: 25, 
     marginBottom: 50,
   },
-  scanAgainText: {
-    color: 'black',
-    fontSize: 16,
-    fontWeight: 'bold',
+  scanAgainText: { 
+    color: 'black', 
+    fontSize: 16, 
+    fontWeight: 'bold' 
   },
-  text: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 20,
+  text: { 
+    fontSize: 16, 
+    textAlign: 'center', 
+    marginBottom: 20 
   },
-  button: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 25,
+  button: { 
+    paddingHorizontal: 30, 
+    paddingVertical: 15, 
+    borderRadius: 25 
   },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+  buttonText: { 
+    color: 'white', 
+    fontSize: 16, 
+    fontWeight: 'bold' 
   },
 }); 

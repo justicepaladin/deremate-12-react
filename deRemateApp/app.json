@@ -40,12 +40,6 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ],
-      [
-        "expo-barcode-scanner",
-        {
-          "cameraPermission": "Esta aplicación necesita acceso a la cámara para escanear códigos QR de entregas."
-        }
       ]
     ],
     "experiments": {
