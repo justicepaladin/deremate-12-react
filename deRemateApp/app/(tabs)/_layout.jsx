@@ -73,6 +73,15 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
+          name="escanear"
+          options={{
+            title: "Escanear QR",
+            tabBarIcon: ({ color }) => (
+              <IconSymbol size={28} name="qrcode" color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="perfil"
           options={{
             title: "Perfil",
