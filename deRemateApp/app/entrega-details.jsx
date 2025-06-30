@@ -23,20 +23,29 @@ import HeaderLogo from "../components/HeaderLogo";
 
 const EntregaDetails = () => {
   const entregaService = useEntregaService();
-  const { entregaObj } = useLocalSearchParams();
-  const entrega = JSON.parse(entregaObj);
-
+  const { entregaId } = useLocalSearchParams();
+  const [entrega, setEntrega] = useState();
   const [codigo, setCodigo] = useState("");
-
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [showCodeInput, setShowCodeInput] = useState(false);
   const router = useRouter();
 
   const apiKey = Constants.expoConfig.extra.googleMapsApiKey;
-  useEffect(() => {
-    Geocoder.init(apiKey);
 
+  useEffect(() => {
+    entregaService
+      .getEntregaById(entregaId)
+      .then((entrega) => setEntrega(entrega));
+  }, [entregaId]);
+
+  useEffect(() => {
+    if (!entrega) {
+      return;
+    }
+
+    Geocoder.init(apiKey);
     Geocoder.from(entrega.direccion)
       .then((json) => {
         const loc = json.results[0].geometry.location;
@@ -51,7 +60,7 @@ const EntregaDetails = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [apiKey, entrega]);
 
   const openInGoogleMaps = () => {
     if (!location) return;
@@ -89,7 +98,14 @@ const EntregaDetails = () => {
     }
   };
 
-  const [showCodeInput, setShowCodeInput] = useState(false);
+  if (!entrega) {
+    return (
+      <View style={styles.loadingEntrega}>
+        <ActivityIndicator size="large" color="#007AFF" />
+        <Text style={styles.loadingText}>Cargando entrega...</Text>
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -333,6 +349,10 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     marginTop: 20,
+    alignItems: "center",
+  },
+  loadingEntrega: {
+    marginTop: 150,
     alignItems: "center",
   },
   loadingText: {
