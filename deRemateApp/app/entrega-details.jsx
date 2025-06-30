@@ -1,16 +1,19 @@
 import { useEntregaService } from "@/services/entregas";
 import { formatDate, formatEstado } from "@/utils/Formatters";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
   Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -22,6 +25,8 @@ const EntregaDetails = () => {
   const entregaService = useEntregaService();
   const { entregaObj } = useLocalSearchParams();
   const entrega = JSON.parse(entregaObj);
+
+  const [codigo, setCodigo] = useState("");
 
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -54,18 +59,13 @@ const EntregaDetails = () => {
     Linking.openURL(url);
   };
 
-  const handleUpdateStatus = async () => {
+  const handleFinish = async () => {
     setUpdating(true);
     try {
-      let nuevoEstado = "ENTREGADO";
-      if (entrega.estado === "PENDIENTE") {
-        nuevoEstado = "EN_VIAJE";
-      }
-      await entregaService.updateStatus(entrega.id, nuevoEstado);
-      Alert.alert("Estado actualizado", "La entrega avanzó al siguiente estado.");
+      await entregaService.finalizarEntrega(entrega.id, codigo);
+      Alert.alert("Entrega finalizada", "La entrega ha sido completada.");
       router.back();
     } catch (error) {
-      Alert.alert("Error", "No se pudo actualizar el estado.");
       console.error(error);
     } finally {
       setUpdating(false);
@@ -75,8 +75,11 @@ const EntregaDetails = () => {
   const handleCancel = async () => {
     setUpdating(true);
     try {
-      await entregaService.updateStatus(entrega.id, "CANCELADO");
-      Alert.alert("Entrega cancelada", "La entrega ha sido cancelada exitosamente.");
+      await entregaService.cancelarEntrega(entrega.id);
+      Alert.alert(
+        "Entrega cancelada",
+        "La entrega ha sido cancelada exitosamente."
+      );
       router.back();
     } catch (error) {
       Alert.alert("Error", "No se pudo cancelar la entrega.");
@@ -86,94 +89,159 @@ const EntregaDetails = () => {
     }
   };
 
+  const [showCodeInput, setShowCodeInput] = useState(false);
+
   return (
-    <View style={{ flex: 1, backgroundColor: "#F7F9FB" }}>
-    <ScrollView contentContainerStyle={[styles.container, { paddingBottom: 180 }]}>
-      <HeaderLogo />
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.back()}
-        activeOpacity={0.7}
-      >
-        <Ionicons name="arrow-back" size={24} color="#007AFF" />
-        <Text style={styles.backButtonText}>Volver</Text>
-      </TouchableOpacity>
-      <View style={styles.titleCard}>
-        <Text style={styles.titleText}>Detalles de Entrega</Text>
-      </View>
-      <View style={styles.dataCard}>
-        <Detail label="Dirección" value={entrega.direccion} icon="📍" />
-        <Detail label="Estado" value={formatEstado(entrega.estado)} icon="🚚" />
-        <Detail label="Fecha de Creación" value={formatDate(entrega.fechaCreacion)} icon="📅" />
-        {entrega.fechaEntrega && (
-          <Detail label="Fecha de Entrega" value={formatDate(entrega.fechaEntrega)} icon="📦" />
-          )}
-        <Detail label="Observaciones" value={entrega.observaciones} icon="📝" />
-      </View>
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={styles.loadingText}>Cargando mapa...</Text>
-        </View>
-      ) : location ? (
-        <View style={styles.mapContainer}>
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: location.latitude,
-              longitude: location.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <View style={{ flex: 1, backgroundColor: "#F7F9FB" }}>
+        <ScrollView
+          contentContainerStyle={[styles.container, { paddingBottom: 180 }]}
+        >
+          <HeaderLogo />
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+            activeOpacity={0.7}
           >
-            <Marker
-              coordinate={{
-                latitude: location.latitude,
-                longitude: location.longitude,
-              }}
-              title={entrega.direccion}
-              description="Destino de entrega"
+            <Ionicons name="arrow-back" size={24} color="#007AFF" />
+            <Text style={styles.backButtonText}>Volver</Text>
+          </TouchableOpacity>
+          <View style={styles.titleCard}>
+            <Text style={styles.titleText}>Detalles de Entrega</Text>
+          </View>
+          <View style={styles.dataCard}>
+            <Detail label="Dirección" value={entrega.direccion} icon="📍" />
+            <Detail
+              label="Estado"
+              value={formatEstado(entrega.estado)}
+              icon="🚚"
             />
-          </MapView>
+            <Detail
+              label="Fecha de Creación"
+              value={formatDate(entrega.fechaCreacion)}
+              icon="📅"
+            />
+            {entrega.fechaEntrega && (
+              <Detail
+                label="Fecha de Entrega"
+                value={formatDate(entrega.fechaEntrega)}
+                icon="📦"
+              />
+            )}
+            <Detail
+              label="Observaciones"
+              value={entrega.observaciones}
+              icon="📝"
+            />
+          </View>
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#007AFF" />
+              <Text style={styles.loadingText}>Cargando mapa...</Text>
+            </View>
+          ) : location ? (
+            <View style={styles.mapContainer}>
+              <MapView
+                style={styles.map}
+                initialRegion={{
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                }}
+              >
+                <Marker
+                  coordinate={{
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                  }}
+                  title={entrega.direccion}
+                  description="Destino de entrega"
+                />
+              </MapView>
+              {entrega.estado !== "ENTREGADO" &&
+                entrega.estado !== "CANCELADO" && (
+                  <TouchableOpacity
+                    style={styles.mapsButton}
+                    onPress={openInGoogleMaps}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.mapsButtonText}>
+                      Navegar con Google Maps
+                    </Text>
+                  </TouchableOpacity>
+                )}
+            </View>
+          ) : (
+            <Text style={styles.errorText}>
+              No se pudo obtener la ubicación.
+            </Text>
+          )}
+        </ScrollView>
+        <View style={{ paddingBottom: 16, backgroundColor: "#F7F9FB" }}>
           {entrega.estado !== "ENTREGADO" && entrega.estado !== "CANCELADO" && (
             <TouchableOpacity
-              style={styles.mapsButton}
-              onPress={openInGoogleMaps}
+              style={styles.cancelButton}
+              onPress={handleCancel}
+              disabled={updating}
               activeOpacity={0.8}
             >
-              <Text style={styles.mapsButtonText}>Navegar con Google Maps</Text>
+              <Text style={styles.cancelButtonText}>
+                {updating ? "Cancelando..." : "Cancelar Entrega"}
+              </Text>
             </TouchableOpacity>
           )}
+
+          {entrega.estado === "EN_VIAJE" &&
+            (showCodeInput ? (
+              <View style={styles.codeInputContainer}>
+                <Text style={styles.codeInputLabel}>Ingrese el código:</Text>
+                <TextInput
+                  style={styles.codeInput}
+                  value={codigo}
+                  onChangeText={setCodigo}
+                  keyboardType="numeric"
+                  maxLength={6}
+                  placeholder="Código de 6 dígitos"
+                />
+                <TouchableOpacity
+                  style={[
+                    styles.updateButton,
+                    updating || codigo.length !== 6
+                      ? styles.disabledButton
+                      : {}, // Aplica un estilo específico para el estado deshabilitado
+                  ]}
+                  onPress={handleFinish}
+                  disabled={updating || codigo.length !== 6}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.updateButtonText}>
+                    {updating ? "Finalizando..." : "Finalizar Entrega"}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={() => setShowCodeInput(false)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.cancelButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.updateButton}
+                onPress={() => setShowCodeInput(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.updateButtonText}>Finalizar Entrega</Text>
+              </TouchableOpacity>
+            ))}
         </View>
-      ) : (
-        <Text style={styles.errorText}>No se pudo obtener la ubicación.</Text>
-      )}
-    </ScrollView>
-    { entrega.estado !== "ENTREGADO" && entrega.estado !== "CANCELADO" && (
-      <View style={{ paddingBottom: 16, backgroundColor: "#F7F9FB" }}>
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={handleCancel}
-          disabled={updating}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.cancelButtonText}>
-            {updating ? "Cancelando..." : "Cancelar Entrega"}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.updateButton}
-          onPress={handleUpdateStatus}
-          disabled={updating}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.updateButtonText}>
-            {updating ? "Actualizando..." : "Actualizar Estado"}
-          </Text>
-        </TouchableOpacity>
       </View>
-    )}
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -345,6 +413,38 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 6,
     fontWeight: "500",
+  },
+  codeInputContainer: {
+    marginHorizontal: 18,
+    marginTop: 8,
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    padding: 16,
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+  },
+  codeInputLabel: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#0056B3",
+    marginBottom: 8,
+  },
+  codeInput: {
+    borderWidth: 1,
+    borderColor: "#E6F0FF",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    fontSize: 16,
+    color: "#222",
+    marginBottom: 12,
+  },
+  disabledButton: {
+    backgroundColor: "#A0A0A0", // Cambia el color de fondo para el estado deshabilitado
+    opacity: 0.5, // Ajusta la opacidad para el estado deshabilitado
   },
 });
 
