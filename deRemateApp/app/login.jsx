@@ -4,7 +4,6 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -23,7 +22,7 @@ const LoginScreen = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const tokenService = useTokenService()
+  const tokenService = useTokenService();
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -37,13 +36,8 @@ const LoginScreen = () => {
       if (data && data.jwtToken) {
         await authTokenManager.setToken(data.jwtToken);
 
-        Alert.alert("Login exitoso", "Bienvenido/a a la aplicación.", [
-          { text: "OK", onPress: () => null },
-        ]);
-
         // Register for push notifications after successful login
-        const token = await tokenService.registerForPushNotifications();
-
+        await tokenService.registerForPushNotifications();
       } else {
         setError("Respuesta inesperada del servidor o token no encontrado.");
       }
@@ -102,13 +96,17 @@ const LoginScreen = () => {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => router.push("register")}
+        <TouchableOpacity
+          onPress={() => router.push("register")}
           style={styles.linkCard}
         >
-          <Text style={styles.linkText}>¿No tienes cuenta? Regístrate aquí</Text>
+          <Text style={styles.linkText}>
+            ¿No tienes cuenta? Regístrate aquí
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push("password-recovery")}
+        <TouchableOpacity
+          onPress={() => router.push("password-recovery")}
           style={styles.linkCard}
         >
           <Text style={styles.linkText}>¿Olvidaste tu contraseña?</Text>

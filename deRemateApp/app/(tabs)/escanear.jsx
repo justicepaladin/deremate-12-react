@@ -3,6 +3,7 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useEntregaService } from "@/services/entregas";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,6 +14,7 @@ export default function EscanearScreen() {
   const [isProcessing, setIsProcessing] = useState(false);
   const { escanearQR } = useEntregaService();
   const colorScheme = useColorScheme();
+  const router = useRouter();
 
   const handleQRScanned = async (qrContent) => {
     if (isProcessing) {
@@ -20,7 +22,7 @@ export default function EscanearScreen() {
     }
     setIsProcessing(true);
     try {
-      const result = await escanearQR(qrContent);
+      await escanearQR(qrContent);
 
       Toast.show({
         type: "success",
@@ -28,6 +30,8 @@ export default function EscanearScreen() {
         text2: "Entrega actualizada correctamente a estado EN_VIAJE",
         position: "top",
       });
+
+      router.push("/(tabs)/pendientes");
 
       setShowScanner(false);
     } catch (error) {
