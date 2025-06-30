@@ -1,12 +1,12 @@
-import QRScanner from '@/components/QRScanner';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { useEntregaService } from '@/services/entregas';
-import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Toast from 'react-native-toast-message';
+import QRScanner from "@/components/QRScanner";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { useEntregaService } from "@/services/entregas";
+import React, { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 export default function EscanearScreen() {
   const [showScanner, setShowScanner] = useState(false);
@@ -21,21 +21,21 @@ export default function EscanearScreen() {
     setIsProcessing(true);
     try {
       const result = await escanearQR(qrContent);
-      
+
       Toast.show({
-        type: 'success',
-        text1: '¡Éxito!',
-        text2: 'Entrega actualizada correctamente a estado EN_VIAJE',
-        position: 'top',
+        type: "success",
+        text1: "¡Éxito!",
+        text2: "Entrega actualizada correctamente a estado EN_VIAJE",
+        position: "top",
       });
-      
+
       setShowScanner(false);
     } catch (error) {
       Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: error.message || 'No se pudo procesar el QR',
-        position: 'top',
+        type: "error",
+        text1: "Error",
+        text2: error.message || "No se pudo procesar el QR",
+        position: "top",
       });
     } finally {
       setIsProcessing(false);
@@ -48,45 +48,52 @@ export default function EscanearScreen() {
 
   if (showScanner) {
     return (
-      <QRScanner 
-        onQRScanned={handleQRScanned}
-        onClose={handleCloseScanner}
-      />
+      <QRScanner onQRScanned={handleQRScanned} onClose={handleCloseScanner} />
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme].background },
+      ]}
+    >
       <View style={styles.header}>
         <Text style={[styles.title, { color: Colors[colorScheme].text }]}>
           Escanear QR
         </Text>
         <Text style={[styles.subtitle, { color: Colors[colorScheme].text }]}>
-          Escanee el código QR de una entrega para cambiar su estado de "PENDIENTE" a "EN VIAJE"
+          Escanee el código QR de una entrega para cambiar su estado de
+          &quot;PENDIENTE&quot; a &quot;EN VIAJE&quot;
         </Text>
       </View>
 
       <View style={styles.content}>
         <View style={styles.iconContainer}>
-          <IconSymbol 
-            name="qrcode" 
-            size={120} 
-            color={Colors[colorScheme].tint} 
+          <IconSymbol
+            name="qrcode"
+            size={120}
+            color={Colors[colorScheme].tint}
           />
-        </View> 
+        </View>
 
         <Text style={[styles.description, { color: Colors[colorScheme].text }]}>
-          Para procesar una entrega, escanee el código QR que se encuentra en el producto o paquete correspondiente.
+          Para procesar una entrega, escanee el código QR que se encuentra en el
+          producto o paquete correspondiente.
         </Text>
 
         <TouchableOpacity
-          style={[styles.scanButton, { backgroundColor: Colors[colorScheme].tint }]}
+          style={[
+            styles.scanButton,
+            { backgroundColor: Colors[colorScheme].tint },
+          ]}
           onPress={() => setShowScanner(true)}
           disabled={isProcessing}
         >
           <IconSymbol name="camera" size={24} color="white" />
           <Text style={styles.scanButtonText}>
-            {isProcessing ? 'Procesando...' : 'Iniciar Escáner'}
+            {isProcessing ? "Procesando..." : "Iniciar Escáner"}
           </Text>
         </TouchableOpacity>
 
@@ -95,10 +102,10 @@ export default function EscanearScreen() {
             Instrucciones:
           </Text>
           <Text style={[styles.infoText, { color: Colors[colorScheme].text }]}>
-            • Asegúrese de que la entrega esté en estado "PENDIENTE"{'\n'}
-            • Coloque el código QR dentro del marco de escaneo{'\n'}
-            • Confirme el escaneo cuando se le solicite{'\n'}
-            • El estado cambiará automáticamente a "EN VIAJE"
+            • Asegúrese de que la entrega esté en estado &quot;PENDIENTE&quot;
+            {"\n"}• Coloque el código QR dentro del marco de escaneo{"\n"}•
+            Confirme el escaneo cuando se le solicite{"\n"}• El estado cambiará
+            automáticamente a &quot;EN VIAJE&quot;
           </Text>
         </View>
       </View>
@@ -117,7 +124,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
   subtitle: {
@@ -128,45 +135,45 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   iconContainer: {
     marginBottom: 30,
   },
   description: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 24,
     marginBottom: 40,
     paddingHorizontal: 20,
   },
   scanButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,
     marginBottom: 40,
   },
   scanButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 10,
   },
   infoContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
     padding: 20,
     borderRadius: 15,
-    width: '100%',
+    width: "100%",
   },
   infoTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 15,
   },
   infoText: {
     fontSize: 14,
     lineHeight: 20,
   },
-}); 
+});

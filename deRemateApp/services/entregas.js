@@ -67,14 +67,26 @@ export const useEntregaService = () => {
     }
   };
 
-  const updateStatus = async (id, status) => {
+  const finalizarEntrega = async (id, codigo) => {
     try {
-      const response = await apiClient.put(`/api/entregas/${id}/estado?nuevoEstado=${encodeURIComponent(status)}`);
+      const response = await apiClient.put(`/api/entregas/${id}/finalizar/${codigo}`);
       return response.data;
     } catch (error) {
-      console.error("Error al actualizar el estado de la entrega:", error);
+      console.error("Error al finalizar la entrega:", error);
       throw new Error(
-        "No se pudo actualizar el estado de la entrega. Inténtalo de nuevo más tarde.",
+        error.response?.data?.message || "No se pudo actualizar el estado de la entrega. Inténtalo de nuevo más tarde.",
+      );
+    }
+  }
+
+  const cancelarEntrega = async (id) => {
+    try {
+      const response = await apiClient.put(`/api/entregas/${id}/cancelar`);
+      return response.data;
+    } catch (error) {
+      console.error("Error al cancelar la entrega:", error);
+      throw new Error(
+        "No se pudo cancelar la entrega. Inténtalo de nuevo más tarde.",
       );
     }
   }
@@ -98,7 +110,8 @@ export const useEntregaService = () => {
     getEntregasPendientes,
     getHistorialEntregas,
     getEntregaById,
-    updateStatus,
+    finalizarEntrega,
+    cancelarEntrega,
     escanearQR,
     agruparYContarEstadosEntrega,
   };
