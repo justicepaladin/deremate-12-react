@@ -1,3 +1,5 @@
+import { StarRating } from "@/components/StarRating";
+import { BACKEND } from "@/services/api";
 import { useEntregaService } from "@/services/entregas";
 import { formatDate, formatEstado } from "@/utils/Formatters";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   KeyboardAvoidingView,
   Linking,
   Platform,
@@ -30,6 +33,7 @@ const EntregaDetails = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [showCodeInput, setShowCodeInput] = useState(false);
+  const [mostrarImagen, setMostrarImagen] = useState(false);
   const router = useRouter();
 
   const apiKey = Constants.expoConfig.extra.googleMapsApiKey;
@@ -152,6 +156,70 @@ const EntregaDetails = () => {
               value={entrega.observaciones}
               icon="📝"
             />
+
+            {entrega.estado === "ENTREGADO" &&
+              (entrega.comentario || entrega.calificacion != null) && (
+                <View style={styles.ratingCard}>
+                  {entrega.comentario && (
+                    <Detail
+                      label="Comentario"
+                      value={`"${entrega.comentario}"`}
+                      icon="🗣️"
+                    />
+                  )}
+                  {entrega.calificacion != null && (
+                    <View style={{ marginTop: 6 }}>
+                      <StarRating rating={entrega.calificacion} size={22} />
+                    </View>
+                  )}
+                </View>
+              )}
+            
+            {entrega.estado === "ENTREGADO" && entrega.imagen && (
+              <>
+                <TouchableOpacity
+                  onPress={() => setMostrarImagen(!mostrarImagen)}
+                  style={{
+                    backgroundColor: "#E6F0FF",
+                    paddingVertical: 10,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    marginBottom: mostrarImagen ? 10 : 0,
+                    marginTop: 10,
+                  }}
+                  activeOpacity={0.85}
+                >
+                  <Text style={{ color: "#0056B3", fontWeight: "bold" }}>
+                    {mostrarImagen ? "Ocultar imagen 📁" : "Producto Entregado 📦"}
+                  </Text>
+                </TouchableOpacity>
+
+                {mostrarImagen && (
+                  <View
+                    style={{
+                      borderRadius: 8,
+                      overflow: "hidden",
+                      borderWidth: 1,
+                      borderColor: "#C3DAFF",
+                      marginTop: 10,
+                    }}
+                  >
+                   <Image
+                      source={{
+                        uri: entrega.imagen
+                      }}
+                      style={{
+                        width: "100%",
+                        height: 200,
+                        resizeMode: "contain",
+                        backgroundColor: "#fff",
+                      }}/>
+
+                  </View>
+                )}
+              </>
+            )}
+
           </View>
           {loading ? (
             <View style={styles.loadingContainer}>

@@ -3,7 +3,7 @@ import axios from "axios";
 import Constants from 'expo-constants';
 
 
-const BACKEND = Constants.expoConfig.extra.apiUrl
+export const BACKEND = Constants.expoConfig.extra.apiUrl
 
 
 export const apiClient = axios.create({
