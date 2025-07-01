@@ -1,9 +1,13 @@
 import { formatDate, formatEstado } from "@/utils/Formatters";
 import { useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StarRating } from "./StarRating";
 
 export function ListEntregaItem({ item }) {
+
+  console.log("ListEntregaItem", item.id);
   const router = useRouter();
+
   return (
     <TouchableOpacity
       style={styles.card}
@@ -30,6 +34,7 @@ export function ListEntregaItem({ item }) {
           {formatEstado(item.estado)}
         </Text>
       </View>
+
       <View style={styles.infoRow}>
         <Text style={styles.icon}>📍</Text>
         <Text style={styles.value}>{item.direccion}</Text>
@@ -46,6 +51,7 @@ export function ListEntregaItem({ item }) {
           Creación: {formatDate(item.fechaCreacion)}
         </Text>
       </View>
+
       {item.fechaEntrega && (
         <View style={styles.infoRow}>
           <Text style={styles.icon}>📦</Text>
@@ -54,13 +60,32 @@ export function ListEntregaItem({ item }) {
           </Text>
         </View>
       )}
-      {item.observaciones ? (
-        <View style={styles.obsBox}>
-          <Text style={styles.obsLabel}>📝 Observaciones:</Text>
-          <Text style={styles.obsText}>{item.observaciones}</Text>
+
+      {item.observaciones && (
+        <InfoBox icon="📝" label="Observaciones" text={item.observaciones} />
+      )}
+
+      {item.comentario && (
+        <InfoBox icon="🗣️" label="Comentario" text={item.comentario} />
+      )}
+
+      {item.calificacion && (
+        <View style={{ marginTop: 6, marginLeft: 4 }}>
+          <StarRating rating={item.calificacion} size={18} />
         </View>
-      ) : null}
+      )}
     </TouchableOpacity>
+  );
+}
+
+function InfoBox({ icon, label, text }) {
+  return (
+    <View style={styles.infoBox}>
+      <Text style={styles.infoLabel}>
+        {icon} {label}:
+      </Text>
+      <Text style={styles.infoText}>"{text}"</Text>
+    </View>
   );
 }
 
@@ -126,20 +151,21 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: "wrap",
   },
-  obsBox: {
+  infoBox: {
     backgroundColor: "#F3F4F6",
     borderRadius: 8,
-    padding: 8,
+    padding: 10,
     marginTop: 8,
   },
-  obsLabel: {
-    fontSize: 13,
+  infoLabel: {
+    fontSize: 14,
     fontWeight: "bold",
     color: "#0056B3",
     marginBottom: 2,
   },
-  obsText: {
+  infoText: {
     fontSize: 14,
-    color: "#333",
+    fontStyle: "italic",
+    color: "#222",
   },
 });
