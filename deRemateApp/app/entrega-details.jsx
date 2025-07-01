@@ -1,6 +1,7 @@
+import { BACKEND } from "@/services/api";
 import { useEntregaService } from "@/services/entregas";
 import { formatDate, formatEstado } from "@/utils/Formatters";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/build/Ionicons";
 import Constants from "expo-constants";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -8,13 +9,10 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  KeyboardAvoidingView,
   Linking,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -45,6 +43,7 @@ const EntregaDetails = () => {
   }, [entregaId]);
 
   useEffect(() => {
+    console.log("Entrega Details:", entrega);
     if (!entrega) {
       return;
     }
@@ -205,7 +204,7 @@ const EntregaDetails = () => {
                   >
                     <Image
                       source={{
-                        uri: `http://192.168.100.34:8080/images/${entrega.imagen}.png`,
+                        uri: `${BACKEND}/images/${entrega.imagen}.png`,
                       }}
                       style={{
                         width: "100%",
