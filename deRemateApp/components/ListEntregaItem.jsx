@@ -12,7 +12,7 @@ export function ListEntregaItem({ item }) {
       onPress={() => {
         router.push({
           pathname: "/entrega-details",
-          params: { entregaObj: JSON.stringify(item) },
+          params: { entregaId: item.id },
         });
       }}
       activeOpacity={0.85}
@@ -25,8 +25,8 @@ export function ListEntregaItem({ item }) {
             item.estado === "ENTREGADO"
               ? styles.estadoEntregado
               : item.estado === "CANCELADO"
-              ? styles.estadoCancelado
-              : styles.estadoPendiente,
+                ? styles.estadoCancelado
+                : styles.estadoPendiente,
           ]}
         >
           {formatEstado(item.estado)}

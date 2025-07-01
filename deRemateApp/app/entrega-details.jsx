@@ -1,15 +1,19 @@
 import { useEntregaService } from "@/services/entregas";
 import { formatDate, formatEstado } from "@/utils/Formatters";
+import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
   Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
   Image,
@@ -22,21 +26,32 @@ import { StarRating } from "../components/StarRating";
 
 
 const EntregaDetails = () => {
-  const entregaService = useEntregaService();
-  const { entregaObj } = useLocalSearchParams();
-  const entrega = JSON.parse(entregaObj);
-  
+const entregaService = useEntregaService();
+const { entregaObj, entregaId } = useLocalSearchParams();
 
-  const [location, setLocation] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
-  const [mostrarImagen, setMostrarImagen] = useState(false);
+const [entrega, setEntrega] = useState(entregaObj ? JSON.parse(entregaObj) : undefined);
+const [codigo, setCodigo] = useState("");
+const [location, setLocation] = useState(null);
+const [loading, setLoading] = useState(true);
+const [updating, setUpdating] = useState(false);
+const [mostrarImagen, setMostrarImagen] = useState(false);
+const [showCodeInput, setShowCodeInput] = useState(false);
   const router = useRouter();
 
   const apiKey = Constants.expoConfig.extra.googleMapsApiKey;
-  useEffect(() => {
-    Geocoder.init(apiKey);
 
+  useEffect(() => {
+    entregaService
+      .getEntregaById(entregaId)
+      .then((entrega) => setEntrega(entrega));
+  }, [entregaId]);
+
+  useEffect(() => {
+    if (!entrega) {
+      return;
+    }
+
+    Geocoder.init(apiKey);
     Geocoder.from(entrega.direccion)
       .then((json) => {
         const loc = json.results[0].geometry.location;
@@ -51,7 +66,7 @@ const EntregaDetails = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [apiKey, entrega]);
 
   const openInGoogleMaps = () => {
     if (!location) return;
@@ -59,18 +74,13 @@ const EntregaDetails = () => {
     Linking.openURL(url);
   };
 
-  const handleUpdateStatus = async () => {
+  const handleFinish = async () => {
     setUpdating(true);
     try {
-      let nuevoEstado = "ENTREGADO";
-      if (entrega.estado === "PENDIENTE") {
-        nuevoEstado = "EN_VIAJE";
-      }
-      await entregaService.updateStatus(entrega.id, nuevoEstado);
-      Alert.alert("Estado actualizado", "La entrega avanzó al siguiente estado.");
+      await entregaService.finalizarEntrega(entrega.id, codigo);
+      Alert.alert("Entrega finalizada", "La entrega ha sido completada.");
       router.back();
     } catch (error) {
-      Alert.alert("Error", "No se pudo actualizar el estado.");
       console.error(error);
     } finally {
       setUpdating(false);
@@ -80,8 +90,11 @@ const EntregaDetails = () => {
   const handleCancel = async () => {
     setUpdating(true);
     try {
-      await entregaService.updateStatus(entrega.id, "CANCELADO");
-      Alert.alert("Entrega cancelada", "La entrega ha sido cancelada exitosamente.");
+      await entregaService.cancelarEntrega(entrega.id);
+      Alert.alert(
+        "Entrega cancelada",
+        "La entrega ha sido cancelada exitosamente."
+      );
       router.back();
     } catch (error) {
       Alert.alert("Error", "No se pudo cancelar la entrega.");
@@ -90,6 +103,7 @@ const EntregaDetails = () => {
       setUpdating(false);
     }
   };
+
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F7F9FB" }}>
@@ -230,6 +244,7 @@ const EntregaDetails = () => {
         </View>
       )}
     </View>
+
   );
 };
 
@@ -331,6 +346,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: "center",
   },
+  loadingEntrega: {
+    marginTop: 150,
+    alignItems: "center",
+  },
   loadingText: {
     marginTop: 10,
     fontSize: 15,
@@ -396,6 +415,51 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     letterSpacing: 0.5,
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 16,
+    marginTop: 10,
+    marginBottom: 2,
+  },
+  backButtonText: {
+    color: "#007AFF",
+    fontSize: 16,
+    marginLeft: 6,
+    fontWeight: "500",
+  },
+  codeInputContainer: {
+    marginHorizontal: 18,
+    marginTop: 8,
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    padding: 16,
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+  },
+  codeInputLabel: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#0056B3",
+    marginBottom: 8,
+  },
+  codeInput: {
+    borderWidth: 1,
+    borderColor: "#E6F0FF",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    fontSize: 16,
+    color: "#222",
+    marginBottom: 12,
+  },
+  disabledButton: {
+    backgroundColor: "#A0A0A0", // Cambia el color de fondo para el estado deshabilitado
+    opacity: 0.5, // Ajusta la opacidad para el estado deshabilitado
   },
 });
 

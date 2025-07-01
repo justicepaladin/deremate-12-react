@@ -1,17 +1,19 @@
 import { ListEntregaItem } from "@/components/ListEntregaItem";
 import { TotalesPorEstado } from "@/components/TotalesPorEstado";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import HeaderLogo from "../../components/HeaderLogo";
 import {
   ESTADOS_ENTREGA_PENDIENTE,
   useEntregaService,
 } from "../../services/entregas";
+import { IconSymbol } from "@/components/ui/IconSymbol";
 
 export default function PendientesScreen() {
   const [entregas, setEntregas] = useState([]);
   const entregasService = useEntregaService();
+  const router = useRouter();
 
   const fetchEntregasPendientes = async () => {
     try {
@@ -28,12 +30,20 @@ export default function PendientesScreen() {
     }, [])
   );
 
+  const handleScanQR = () => {
+    router.push("/(tabs)/escanear");
+  };
+
   return (
     <View style={styles.container}>
       <HeaderLogo />
 
       <View style={styles.titleCard}>
         <Text style={styles.titleText}>Entregas Pendientes</Text>
+        <TouchableOpacity style={styles.scanButton} onPress={handleScanQR}>
+          <IconSymbol name="qrcode" size={20} color="#FFFFFF" />
+          <Text style={styles.scanButtonText}>Escanear QR</Text>
+        </TouchableOpacity>
       </View>
 
       <TotalesPorEstado
@@ -69,6 +79,21 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#FFFFFF",
+    marginBottom: 10,
+  },
+  scanButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  scanButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginLeft: 5,
   },
   list: {
     paddingBottom: 16,
