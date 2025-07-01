@@ -1,22 +1,20 @@
+import { BACKEND } from "@/services/api";
 import { useEntregaService } from "@/services/entregas";
 import { formatDate, formatEstado } from "@/utils/Formatters";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/build/Ionicons";
 import Constants from "expo-constants";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  KeyboardAvoidingView,
+  Image,
   Linking,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
-  View,
-  Image,
+  View
 } from "react-native";
 import Geocoder from "react-native-geocoding";
 import MapView, { Marker } from "react-native-maps";
@@ -26,16 +24,16 @@ import { StarRating } from "../components/StarRating";
 
 
 const EntregaDetails = () => {
-const entregaService = useEntregaService();
-const { entregaObj, entregaId } = useLocalSearchParams();
+  const entregaService = useEntregaService();
+  const { entregaObj, entregaId } = useLocalSearchParams();
 
-const [entrega, setEntrega] = useState(entregaObj ? JSON.parse(entregaObj) : undefined);
-const [codigo, setCodigo] = useState("");
-const [location, setLocation] = useState(null);
-const [loading, setLoading] = useState(true);
-const [updating, setUpdating] = useState(false);
-const [mostrarImagen, setMostrarImagen] = useState(false);
-const [showCodeInput, setShowCodeInput] = useState(false);
+  const [entrega, setEntrega] = useState(entregaObj ? JSON.parse(entregaObj) : undefined);
+  const [codigo, setCodigo] = useState("");
+  const [location, setLocation] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [mostrarImagen, setMostrarImagen] = useState(false);
+  const [showCodeInput, setShowCodeInput] = useState(false);
   const router = useRouter();
 
   const apiKey = Constants.expoConfig.extra.googleMapsApiKey;
@@ -47,6 +45,7 @@ const [showCodeInput, setShowCodeInput] = useState(false);
   }, [entregaId]);
 
   useEffect(() => {
+    console.log("Entrega Details:", entrega);
     if (!entrega) {
       return;
     }
@@ -106,9 +105,18 @@ const [showCodeInput, setShowCodeInput] = useState(false);
 
 
   return (
+    entrega && 
     <View style={{ flex: 1, backgroundColor: "#F7F9FB" }}>
       <ScrollView contentContainerStyle={[styles.container, { paddingBottom: 180 }]}>
         <HeaderLogo />
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="arrow-back" size={24} color="#007AFF" />
+          <Text style={styles.backButtonText}>Volver</Text>
+        </TouchableOpacity>
         <View style={styles.titleCard}>
           <Text style={styles.titleText}>Detalles de Entrega</Text>
         </View>
@@ -165,7 +173,7 @@ const [showCodeInput, setShowCodeInput] = useState(false);
                   }}
                 >
                   <Image
-                    source={{ uri: `http://192.168.100.34:8080/images/${entrega.imagen}.png` }}
+                    source={{ uri: `${BACKEND}/images/${entrega.imagen}.png` }}
                     style={{
                       width: "100%",
                       height: 200,
@@ -233,7 +241,7 @@ const [showCodeInput, setShowCodeInput] = useState(false);
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.updateButton}
-            onPress={handleUpdateStatus}
+            onPress={handleFinish}
             disabled={updating}
             activeOpacity={0.8}
           >
@@ -244,7 +252,6 @@ const [showCodeInput, setShowCodeInput] = useState(false);
         </View>
       )}
     </View>
-
   );
 };
 
