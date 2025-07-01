@@ -133,7 +133,8 @@ const EntregaDetails = () => {
             <Text style={styles.titleText}>Detalles de Entrega</Text>
           </View>
           <View style={styles.dataCard}>
-            <Detail label="Dirección" value={entrega.direccion} icon="📍" />
+            <Detail label="Direccion" value={entrega.direccion} icon="📍" />
+            <Detail label="Deposito" value={entrega.direccionDeposito} icon="🚛" />
             <Detail
               label="Estado"
               value={formatEstado(entrega.estado)}
