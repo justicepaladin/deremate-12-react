@@ -190,7 +190,7 @@ const EntregaDetails = () => {
                   activeOpacity={0.85}
                 >
                   <Text style={{ color: "#0056B3", fontWeight: "bold" }}>
-                    {mostrarImagen ? "Ocultar imagen 📁" : "Ver comprobante 📦"}
+                    {mostrarImagen ? "Ocultar imagen 📁" : "Producto Entregado 📦"}
                   </Text>
                 </TouchableOpacity>
 
@@ -206,7 +206,7 @@ const EntregaDetails = () => {
                   >
                    <Image
                       source={{
-                        uri: `${BACKEND}/images/${entrega.imagen}.png`
+                        uri: entrega.imagen
                       }}
                       style={{
                         width: "100%",
