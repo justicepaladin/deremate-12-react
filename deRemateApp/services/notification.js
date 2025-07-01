@@ -24,9 +24,6 @@ export const useTokenService = () => {
 
             token = (await Notifications.getExpoPushTokenAsync()).data;
             const deviceName = await Device.deviceName || "Unknown Device";
-            console.log('Expo Push Token:', token);
-            console.log('Device Name:', deviceName);
-
 
             const response = await apiClient.post('/api/notifications/register', {
                 expoToken: token,
@@ -37,7 +34,7 @@ export const useTokenService = () => {
                 console.error('Error registering push token:', response.data);
                 alert('Failed to register push token. Please try again later.');
             } else {
-                console.log('Push token registered successfully');
+                // Pass
             }
         } else {
             alert('Must use physical device for Push Notifications');
@@ -45,8 +42,8 @@ export const useTokenService = () => {
 
         if (Platform.OS === 'android') {
             await Notifications.setNotificationChannelAsync('default', {
-            name: 'default',
-            importance: Notifications.AndroidImportance.MAX,
+                name: 'default',
+                importance: Notifications.AndroidImportance.MAX,
             });
         }
 

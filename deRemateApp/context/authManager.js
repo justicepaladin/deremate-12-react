@@ -18,7 +18,6 @@ export const authTokenManager = {
     },
 
     subscribe(callback) {
-        console.log(1)
         listeners.add(callback);
         return () => {
             listeners.delete(callback)
