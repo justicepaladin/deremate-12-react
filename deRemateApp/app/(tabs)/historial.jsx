@@ -27,7 +27,7 @@ export default function PendientesScreen() {
       fetchEntregasEntregas();
     }, [])
   );
-  console.log(entregas);
+
   return (
     <View style={styles.container}>
       <HeaderLogo />

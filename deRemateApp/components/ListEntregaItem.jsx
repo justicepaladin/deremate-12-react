@@ -4,8 +4,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { StarRating } from "./StarRating";
 
 export function ListEntregaItem({ item }) {
-
-  console.log("ListEntregaItem", item.id);
   const router = useRouter();
 
   return (

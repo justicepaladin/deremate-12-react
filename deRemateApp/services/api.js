@@ -18,7 +18,6 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     const token = await authTokenManager.getToken();
-    console.log("TOKEN:", token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -32,15 +31,6 @@ apiClient.interceptors.request.use(
 // Log de las peticiones
 apiClient.interceptors.request.use(
   (config) => {
-    console.log(
-      `Making API call to: ${config.url} with method: ${config.method}`,
-    );
-    if (config.method !== "get") {
-      console.log(
-        `Request body for ${config.method.toUpperCase()} ${config.url}:`,
-        config.data,
-      );
-    }
     return config;
   },
   (error) => {
@@ -51,14 +41,9 @@ apiClient.interceptors.request.use(
 // Log de responses
 apiClient.interceptors.response.use(
   (response) => {
-    console.log(`Response from ${response.config.url}:`, response.data);
     return response;
   },
   (error) => {
-    console.error(
-      `Error response from ${error.config?.url}:`,
-      error.response?.data || error.message,
-    );
     return Promise.reject(error);
   },
 );
@@ -69,7 +54,6 @@ apiClient.interceptors.response.use(
   },
   async (error) => {
     if (error.response && error.response.status === 403) {
-      console.log("Error 403: Acceso denegado. Se hace logout");
       await authTokenManager.clearToken()
     }
     return Promise.reject(error);
@@ -79,7 +63,7 @@ apiClient.interceptors.response.use(
 export const getErrorMessage = (error) => {
   if (error.response && error.response.data) {
     const data = error.response.data;
-    if (typeof data === "string") return data; 
+    if (typeof data === "string") return data;
     if (data.message) return data.message;
     if (data.error) return data.error;
     if (data.errors && data.errors.length > 0) {
