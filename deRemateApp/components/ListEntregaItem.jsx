@@ -34,6 +34,12 @@ export function ListEntregaItem({ item }) {
         <Text style={styles.icon}>📍</Text>
         <Text style={styles.value}>{item.direccion}</Text>
       </View>
+      {item.estado === "PENDIENTE" && (
+        <View style={styles.infoRow}>
+          <Text style={styles.icon}>🚛Deposito:</Text>
+          <Text style={styles.value}>{item.direccionDeposito}</Text>
+        </View>
+      )}
       <View style={styles.infoRow}>
         <Text style={styles.icon}>📅</Text>
         <Text style={styles.value}>
