@@ -23,12 +23,16 @@ import { StarRating } from "../components/StarRating";
 
 const EntregaDetails = () => {
   const entregaService = useEntregaService();
-  const { entregaId } = useLocalSearchParams();
-  const [entrega, setEntrega] = useState();
+  const { entregaObj, entregaId } = useLocalSearchParams();
+
+  const [entrega, setEntrega] = useState(
+    entregaObj ? JSON.parse(entregaObj) : undefined
+  );
   const [codigo, setCodigo] = useState("");
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [mostrarImagen, setMostrarImagen] = useState(false);
   const [showCodeInput, setShowCodeInput] = useState(false);
   const [mostrarImagen, setMostrarImagen] = useState(false);
 
@@ -101,20 +105,8 @@ const EntregaDetails = () => {
     }
   };
 
-  if (!entrega) {
-    return (
-      <View style={styles.loadingEntrega}>
-        <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={styles.loadingText}>Cargando entrega...</Text>
-      </View>
-    );
-  }
-
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
+    entrega && (
       <View style={{ flex: 1, backgroundColor: "#F7F9FB" }}>
         <ScrollView
           contentContainerStyle={[styles.container, { paddingBottom: 180 }]}
@@ -131,6 +123,7 @@ const EntregaDetails = () => {
           <View style={styles.titleCard}>
             <Text style={styles.titleText}>Detalles de Entrega</Text>
           </View>
+
           <View style={styles.dataCard}>
             <Detail label="Dirección" value={entrega.direccion} icon="📍" />
             <Detail
@@ -155,6 +148,7 @@ const EntregaDetails = () => {
               value={entrega.observaciones}
               icon="📝"
             />
+
             {entrega.estado === "ENTREGADO" &&
               (entrega.comentario || entrega.calificacion != null) && (
                 <View style={styles.ratingCard}>
@@ -218,6 +212,7 @@ const EntregaDetails = () => {
               </>
             )}
           </View>
+
           {loading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#007AFF" />
@@ -262,8 +257,9 @@ const EntregaDetails = () => {
             </Text>
           )}
         </ScrollView>
-        <View style={{ paddingBottom: 16, backgroundColor: "#F7F9FB" }}>
-          {entrega.estado !== "ENTREGADO" && entrega.estado !== "CANCELADO" && (
+
+        {entrega.estado !== "ENTREGADO" && entrega.estado !== "CANCELADO" && (
+          <View style={{ paddingBottom: 16, backgroundColor: "#F7F9FB" }}>
             <TouchableOpacity
               style={styles.cancelButton}
               onPress={handleCancel}
@@ -274,55 +270,20 @@ const EntregaDetails = () => {
                 {updating ? "Cancelando..." : "Cancelar Entrega"}
               </Text>
             </TouchableOpacity>
-          )}
-
-          {entrega.estado === "EN_VIAJE" &&
-            (showCodeInput ? (
-              <View style={styles.codeInputContainer}>
-                <Text style={styles.codeInputLabel}>Ingrese el código:</Text>
-                <TextInput
-                  style={styles.codeInput}
-                  value={codigo}
-                  onChangeText={setCodigo}
-                  keyboardType="numeric"
-                  maxLength={6}
-                  placeholder="Código de 6 dígitos"
-                />
-                <TouchableOpacity
-                  style={[
-                    styles.updateButton,
-                    updating || codigo.length !== 6
-                      ? styles.disabledButton
-                      : {}, // Aplica un estilo específico para el estado deshabilitado
-                  ]}
-                  onPress={handleFinish}
-                  disabled={updating || codigo.length !== 6}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.updateButtonText}>
-                    {updating ? "Finalizando..." : "Finalizar Entrega"}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.cancelButton}
-                  onPress={() => setShowCodeInput(false)}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.cancelButtonText}>Cancelar</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <TouchableOpacity
-                style={styles.updateButton}
-                onPress={() => setShowCodeInput(true)}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.updateButtonText}>Finalizar Entrega</Text>
-              </TouchableOpacity>
-            ))}
-        </View>
+            <TouchableOpacity
+              style={styles.updateButton}
+              onPress={handleFinish}
+              disabled={updating}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.updateButtonText}>
+                {updating ? "Actualizando..." : "Actualizar Estado"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
-    </KeyboardAvoidingView>
+    )
   );
 };
 
