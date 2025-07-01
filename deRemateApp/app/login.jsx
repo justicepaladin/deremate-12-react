@@ -43,7 +43,7 @@ const LoginScreen = () => {
       }
     } catch (err) {
       setError("Las credenciales no son válidas o ha ocurrido un error.");
-      console.error("Login error:", err);
+      // console.error("Login error:", err);
     } finally {
       setLoading(false);
     }

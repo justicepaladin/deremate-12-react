@@ -1,4 +1,4 @@
-import { apiClient } from "./api";
+import { apiClient, getErrorMessage } from "./api";
 
 export const ESTADOS_ENTREGA_PENDIENTE = ["PENDIENTE", "EN_VIAJE"]
 export const ESTADOS_ENTREGA_HISTORIAL = ["ENTREGADO", "CANCELADO"]
@@ -98,10 +98,11 @@ export const useEntregaService = () => {
       });
       return response.data;
     } catch (error) {
-      console.error("Error al escanear QR:", error);
-      throw new Error(
-        "No se pudo procesar el QR. Verifique que la entrega esté en estado PENDIENTE.",
-      );
+      const backendMessage = getErrorMessage(error);
+      if (backendMessage && backendMessage !== "Ocurrió un error desconocido.") {
+        throw new Error(backendMessage);
+      }
+      throw new Error("No se pudo procesar el QR. Inténtelo de nuevo más tarde.");
     }
   }
 

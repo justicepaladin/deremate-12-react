@@ -2,13 +2,15 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { CameraView, useCameraPermissions } from "expo-camera";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ErrorAlert } from "@/components/ui/ErrorAlert";
 
-export default function QRScanner({ onQRScanned, onClose }) {
+export default function QRScanner({ onQRScanned, onClose, onSuccess }) {
   const [permission, requestPermission] = useCameraPermissions();
   const colorScheme = useColorScheme();
   const alertOpenRef = useRef(false);
+  const [errorAlert, setErrorAlert] = useState({ visible: false, message: "" });
 
   if (!permission) {
     return null;
@@ -46,25 +48,44 @@ export default function QRScanner({ onQRScanned, onClose }) {
       "QR Detectado",
       `¿Desea procesar este código QR?\n\nContenido: ${data}`,
       [
-        { text: "Cancelar", style: "cancel", onPress: onClose }, // Cierra el componente al cancelar
+        { text: "Cancelar", style: "cancel", onPress: onClose },
         {
           text: "Procesar",
           onPress: () => {
-            onQRScanned(data);
-            alertOpenRef.current = true; // Deshabilita futuros escaneos
+            Promise.resolve(onQRScanned(data))
+              .then(() => {
+                if (onSuccess) onSuccess();
+                onClose();
+              })
+              .catch((error) => {
+                setErrorAlert({ visible: true, message: error.message || "Ocurrió un error inesperado" });
+              });
+            alertOpenRef.current = true;
           },
         },
       ]
     );
   };
 
+  const handleCloseErrorAlert = () => {
+    setErrorAlert({ visible: false, message: "" });
+    alertOpenRef.current = false;  // Cierra el QRScanner y vuelve a la pantalla principal
+  };
+
   return (
     <View style={styles.container}>
+      <ErrorAlert
+        visible={errorAlert.visible}
+        message={errorAlert.message}
+        onClose={handleCloseErrorAlert}
+        showRetry={false}
+        title="Error al Escanear QR"
+      />
       <CameraView
         style={styles.camera}
         onBarcodeScanned={
           alertOpenRef.current ? undefined : handleBarCodeScanned
-        } // Evita nuevos escaneos
+        }
         barcodeScannerSettings={{
           barcodeTypes: ["qr"],
         }}

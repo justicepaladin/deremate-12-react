@@ -1,5 +1,6 @@
 import QRScanner from "@/components/QRScanner";
 import { IconSymbol } from "@/components/ui/IconSymbol";
+import { ErrorAlert } from "@/components/ui/ErrorAlert";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useEntregaService } from "@/services/entregas";
@@ -12,47 +13,60 @@ import Toast from "react-native-toast-message";
 export default function EscanearScreen() {
   const [showScanner, setShowScanner] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [errorAlert, setErrorAlert] = useState({ visible: false, message: "" });
   const { escanearQR } = useEntregaService();
   const colorScheme = useColorScheme();
   const router = useRouter();
 
   const handleQRScanned = async (qrContent) => {
-    if (isProcessing) {
-      return;
-    }
+    if (isProcessing) return;
     setIsProcessing(true);
     try {
       await escanearQR(qrContent);
-
-      Toast.show({
-        type: "success",
-        text1: "¡Éxito!",
-        text2: "Entrega actualizada correctamente a estado EN_VIAJE",
-        position: "top",
-      });
-
-      router.push("/(tabs)/pendientes");
-
-      setShowScanner(false);
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: error.message || "No se pudo procesar el QR",
-        position: "top",
-      });
-    } finally {
       setIsProcessing(false);
+    } catch (error) {
+      setIsProcessing(false);
+      throw error;
     }
+  };
+
+  const handleSuccess = () => {
+    Toast.show({
+      type: "success",
+      text1: "¡Éxito!",
+      text2: "Entrega actualizada correctamente a estado EN_VIAJE",
+      position: "top",
+    });
+    router.push("/(tabs)/pendientes");
+    setShowScanner(false);
+  };
+
+  const handleCloseErrorAlert = () => {
+    setErrorAlert({ visible: false, message: "" });
+  };
+
+  const handleRetryScan = () => {
+    setErrorAlert({ visible: false, message: "" });
+    // El usuario puede escanear nuevamente
   };
 
   const handleCloseScanner = () => {
     setShowScanner(false);
   };
 
+  const handleError = (message) => {
+    setShowScanner(false); // Cierra el QRScanner
+    setErrorAlert({ visible: true, message }); // Muestra el modal de error
+  };
+
   if (showScanner) {
     return (
-      <QRScanner onQRScanned={handleQRScanned} onClose={handleCloseScanner} />
+      <QRScanner
+        onQRScanned={handleQRScanned}
+        onClose={handleCloseScanner}
+        onError={handleError}
+        onSuccess={handleSuccess}
+      />
     );
   }
 
@@ -63,6 +77,14 @@ export default function EscanearScreen() {
         { backgroundColor: Colors[colorScheme].background },
       ]}
     >
+      <ErrorAlert
+        visible={errorAlert.visible}
+        message={errorAlert.message}
+        onClose={handleCloseErrorAlert}
+        showRetry={true}
+        onRetry={handleRetryScan}
+        title="Error al Escanear QR"
+      />
       <View style={styles.header}>
         <Text style={[styles.title, { color: Colors[colorScheme].text }]}>
           Escanear QR

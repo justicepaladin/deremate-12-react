@@ -1,3 +1,4 @@
 node_modules
 .idea/
 deRemateApp/.env
+deRemateApp/app.config.js
