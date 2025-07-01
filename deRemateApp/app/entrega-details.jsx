@@ -1,7 +1,8 @@
+import { StarRating } from "@/components/StarRating";
 import { BACKEND } from "@/services/api";
 import { useEntregaService } from "@/services/entregas";
 import { formatDate, formatEstado } from "@/utils/Formatters";
-import Ionicons from "@expo/vector-icons/build/Ionicons";
+import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -9,33 +10,30 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  KeyboardAvoidingView,
   Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import Geocoder from "react-native-geocoding";
 import MapView, { Marker } from "react-native-maps";
 import HeaderLogo from "../components/HeaderLogo";
-import { StarRating } from "../components/StarRating";
 
 const EntregaDetails = () => {
   const entregaService = useEntregaService();
-  const { entregaObj, entregaId } = useLocalSearchParams();
-
-  const [entrega, setEntrega] = useState(
-    entregaObj ? JSON.parse(entregaObj) : undefined
-  );
+  const { entregaId } = useLocalSearchParams();
+  const [entrega, setEntrega] = useState();
   const [codigo, setCodigo] = useState("");
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const [mostrarImagen, setMostrarImagen] = useState(false);
   const [showCodeInput, setShowCodeInput] = useState(false);
   const [mostrarImagen, setMostrarImagen] = useState(false);
-
   const router = useRouter();
 
   const apiKey = Constants.expoConfig.extra.googleMapsApiKey;
@@ -47,7 +45,6 @@ const EntregaDetails = () => {
   }, [entregaId]);
 
   useEffect(() => {
-    console.log("Entrega Details:", entrega);
     if (!entrega) {
       return;
     }
@@ -105,8 +102,20 @@ const EntregaDetails = () => {
     }
   };
 
+  if (!entrega) {
+    return (
+      <View style={styles.loadingEntrega}>
+        <ActivityIndicator size="large" color="#007AFF" />
+        <Text style={styles.loadingText}>Cargando entrega...</Text>
+      </View>
+    );
+  }
+
   return (
-    entrega && (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <View style={{ flex: 1, backgroundColor: "#F7F9FB" }}>
         <ScrollView
           contentContainerStyle={[styles.container, { paddingBottom: 180 }]}
@@ -123,7 +132,6 @@ const EntregaDetails = () => {
           <View style={styles.titleCard}>
             <Text style={styles.titleText}>Detalles de Entrega</Text>
           </View>
-
           <View style={styles.dataCard}>
             <Detail label="Dirección" value={entrega.direccion} icon="📍" />
             <Detail
@@ -166,7 +174,7 @@ const EntregaDetails = () => {
                   )}
                 </View>
               )}
-
+            
             {entrega.estado === "ENTREGADO" && entrega.imagen && (
               <>
                 <TouchableOpacity
@@ -196,23 +204,23 @@ const EntregaDetails = () => {
                       marginTop: 10,
                     }}
                   >
-                    <Image
+                   <Image
                       source={{
-                        uri: `${BACKEND}/images/${entrega.imagen}.png`,
+                        uri: `${BACKEND}/images/${entrega.imagen}.png`
                       }}
                       style={{
                         width: "100%",
                         height: 200,
                         resizeMode: "contain",
                         backgroundColor: "#fff",
-                      }}
-                    />
+                      }}/>
+
                   </View>
                 )}
               </>
             )}
-          </View>
 
+          </View>
           {loading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#007AFF" />
@@ -257,9 +265,8 @@ const EntregaDetails = () => {
             </Text>
           )}
         </ScrollView>
-
-        {entrega.estado !== "ENTREGADO" && entrega.estado !== "CANCELADO" && (
-          <View style={{ paddingBottom: 16, backgroundColor: "#F7F9FB" }}>
+        <View style={{ paddingBottom: 16, backgroundColor: "#F7F9FB" }}>
+          {entrega.estado !== "ENTREGADO" && entrega.estado !== "CANCELADO" && (
             <TouchableOpacity
               style={styles.cancelButton}
               onPress={handleCancel}
@@ -270,20 +277,55 @@ const EntregaDetails = () => {
                 {updating ? "Cancelando..." : "Cancelar Entrega"}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.updateButton}
-              onPress={handleFinish}
-              disabled={updating}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.updateButtonText}>
-                {updating ? "Actualizando..." : "Actualizar Estado"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
+          )}
+
+          {entrega.estado === "EN_VIAJE" &&
+            (showCodeInput ? (
+              <View style={styles.codeInputContainer}>
+                <Text style={styles.codeInputLabel}>Ingrese el código:</Text>
+                <TextInput
+                  style={styles.codeInput}
+                  value={codigo}
+                  onChangeText={setCodigo}
+                  keyboardType="numeric"
+                  maxLength={6}
+                  placeholder="Código de 6 dígitos"
+                />
+                <TouchableOpacity
+                  style={[
+                    styles.updateButton,
+                    updating || codigo.length !== 6
+                      ? styles.disabledButton
+                      : {}, // Aplica un estilo específico para el estado deshabilitado
+                  ]}
+                  onPress={handleFinish}
+                  disabled={updating || codigo.length !== 6}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.updateButtonText}>
+                    {updating ? "Finalizando..." : "Finalizar Entrega"}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={() => setShowCodeInput(false)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.cancelButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.updateButton}
+                onPress={() => setShowCodeInput(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.updateButtonText}>Finalizar Entrega</Text>
+              </TouchableOpacity>
+            ))}
+        </View>
       </View>
-    )
+    </KeyboardAvoidingView>
   );
 };
 
@@ -304,6 +346,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F7F9FB",
     padding: 0,
     flexGrow: 1,
+    // paddingBottom: 20,
   },
   titleCard: {
     backgroundColor: "#007AFF",
@@ -359,21 +402,12 @@ const styles = StyleSheet.create({
     flex: 2,
     textAlign: "right",
   },
-  ratingCard: {
-    marginTop: 10,
-    paddingTop: 12,
-  },
-  comentarioText: {
-    fontSize: 15,
-    color: "#0056B3",
-    fontStyle: "italic",
-    marginBottom: 4,
-  },
   mapContainer: {
     marginHorizontal: 16,
     marginBottom: 18,
     borderRadius: 10,
     overflow: "hidden",
+    // height: 0,
     elevation: 1,
     backgroundColor: "#E6F0FF",
   },
