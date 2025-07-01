@@ -79,6 +79,7 @@ apiClient.interceptors.response.use(
 export const getErrorMessage = (error) => {
   if (error.response && error.response.data) {
     const data = error.response.data;
+    if (typeof data === "string") return data; 
     if (data.message) return data.message;
     if (data.error) return data.error;
     if (data.errors && data.errors.length > 0) {
